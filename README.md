@@ -4,7 +4,8 @@
 
 「策学」寓意学习策略。PolicyLab 将算法直觉、代码讲解和真实训练产物放到同一个学习入口。
 
-- 在线网站：<https://xingzeye.github.io/policylab/>
+- GPT Sites：<https://policylab.xzy666999.chatgpt.site>（仅站点所有者可访问，需登录对应 ChatGPT 账号）
+- GitHub Pages：<https://xingzeye.github.io/policylab/>
 - GitHub 源码：<https://github.com/xingzeye/policylab>
 - 算法轻松学：<https://xingzeye.github.io/policylab/learn/>
 
@@ -89,7 +90,21 @@ conda run -n benke python manage.py snapshot_dataset
 
 然后重新导出、提交、推送。线上不提供管理后台、训练任务或动态文件管理；后台继续通过本地 `/admin/` 使用。撤回站点更新时，使用 `git revert <commit>` 后推送，以保留历史。
 
-## 注意
+## GPT Sites 部署与更新
+
+Sites 与 GitHub Pages 使用同一套静态导出，不改变原有学习内容与训练产物。Sites 的身份和静态目录记录在 `.openai/hosting.json`，项目 ID 为 `appgprj_6ad0bc9a25448191ba9741e7b32d1803`，后续更新应复用此 ID。`dist/` 是被 Git 忽略的 Sites 打包目录，`docs/` 仍供 GitHub Pages 使用。
+
+在项目根目录生成 Sites 发布文件：
+
+```powershell
+conda run -n benke python manage.py export_pages --output dist
+```
+
+然后使用 Codex 的 Sites 技能获取此站点的临时源码凭据，通过官方 source helper 同步精确源码提交、打包并发布。临时凭据只通过隐藏的标准输入传递，不写入仓库或文件。GitHub 推送和 Sites 发布是两个独立动作；仅推送 GitHub 不会更新 Sites。
+
+新 Sites 默认仅所有者可访问；该地址需要对应 ChatGPT 账号登录。更改可见范围应通过 Sites 的共享设置另行操作。Sites 仍是静态展示，不运行 Django 后台或训练任务。
+
+## 本地文件注意事项
 
 项目中包含较大的数据和模型相关文件，操作时不要批量删除文件或目录。
 

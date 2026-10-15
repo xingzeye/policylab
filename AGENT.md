@@ -35,7 +35,13 @@
 - 修改代码时，同步维护 `PROJECT_GUIDE.md`、`README.md` 和 `AGENT.md`。
 - 推荐在 conda 环境 `benke` 下运行检查和服务。
 
-## 验证建议
+## Sites 接续发布入口
+
+项目另有 GPT Sites 发布配置 `.openai/hosting.json`，ID 为 `appgprj_6ad0bc9a25448191ba9741e7b32d1803`，不得新建重复站点。URL 为 `https://policylab.xzy666999.chatgpt.site`，保持新建时的所有者私有范围；未经明确要求不要变更访问权限。
+
+在项目根目录执行 `conda run -n benke python manage.py export_pages --output dist`，再按 Sites 技能的 source helper 流程同步源码、打包和部署。`dist/` 被忽略，`docs/` 继续供 GitHub Pages 发布；不要把 Sites 凭据放入命令参数、文件或日志。部署须等待终态 `succeeded` 才能宣称成功。Sites 登录拦截是访问控制，不等于构建失败。
+
+## 本地与 GitHub Pages 验证建议
 
 修改算法介绍页后，至少运行：
 

@@ -48,7 +48,15 @@
 
 本地 Django 保留原有后台和文件视图。Pages 不运行 Python，不连接数据库，也不启动训练。完整 CSV / HDF5 文件因体积较大留在本地；公开站的数据页明确显示快照说明。训练日志的 NaN 等异常提示按现有逻辑保留，不能把训练损失或图表当作独立回报评估。
 
-## 当前实现与验证
+## GPT Sites 发布配置
+
+- `.openai/hosting.json`：持久化 Site ID `appgprj_6ad0bc9a25448191ba9741e7b32d1803`，声明 `static.directory: dist`。
+- `dist/`：通过现有 `export_pages --output dist` 生成，沿用 26 个公开页面及结果文件白名单，不进入 Git。
+- Sites 地址：`https://policylab.xzy666999.chatgpt.site`；新建站点保持仅所有者可访问，未改为公开共享。
+- 源码同时保留 GitHub `origin` 与 Sites 平台源码同步。官方 helper 使用临时凭据推送确切提交，再从该提交构建的 `dist/` 打包发布。
+- 原 `docs/` 与 GitHub Pages 发布设置继续保留。未来更新内容时，应分别导出两个目录并完成两端发布。
+
+## 既有实现与验证
 
 - 已实现：中文算法学习页、跨页面导航、首页入口、数据预览快照、公开页面静态导出和查询切换适配。
 - 已验证：Django 系统检查、7 项测试、全部 26 个公开页面导出及本地文件链接检查。
