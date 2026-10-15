@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>算法介绍</title>
+    <link rel="icon" href="../static/policylab/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        body { background: #f6f7fb; font-family: "Microsoft YaHei", Arial, sans-serif; color: #333; }
+        .page-wrap { padding: 24px 0 36px; }
+        .top-panel, .section-panel { border: 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+        .top-panel .panel-body { padding: 22px 24px; }
+        .summary-title { margin: 0 0 10px; font-size: 24px; font-weight: 700; }
+        .summary-text { color: #666; line-height: 1.85; margin-bottom: 0; }
+        .control-row { margin-top: 16px; }
+        .control-label { padding-top: 8px; font-weight: 700; }
+        .nav-tabs { border-bottom: 1px solid #ddd; }
+        .nav-tabs > li > a { color: #555; font-weight: 700; }
+        .nav-tabs > li.active > a,
+        .nav-tabs > li.active > a:hover,
+        .nav-tabs > li.active > a:focus { color: #337ab7; }
+        .tab-content { background: #fff; border: 1px solid #ddd; border-top: 0; padding: 22px; border-radius: 0 0 8px 8px; }
+        .section-title { margin: 0 0 14px; font-size: 22px; font-weight: 700; }
+        .section-lead { color: #666; line-height: 1.9; margin-bottom: 18px; }
+        .soft-card { background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
+        .soft-card h4 { margin-top: 0; margin-bottom: 10px; font-size: 16px; font-weight: 700; }
+        .soft-card p, .soft-card li { color: #666; line-height: 1.8; }
+        .design-layer { margin-bottom: 10px; }
+        .design-layer:last-child { margin-bottom: 0; }
+        .design-label { display: inline-block; margin-bottom: 4px; font-weight: 700; color: #337ab7; }
+        .design-label.tech { color: #555; }
+        .steps { counter-reset: item; list-style: none; padding-left: 0; }
+        .steps li { position: relative; padding: 12px 12px 12px 50px; margin-bottom: 12px; background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; }
+        .steps li:before { counter-increment: item; content: counter(item); position: absolute; left: 15px; top: 10px; width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; background: #337ab7; color: #fff; font-weight: 700; }
+        .kv-table th { width: 220px; background: #fafafa; }
+        .mini-note { color: #888; margin-top: 8px; }
+        .compare-table th { white-space: nowrap; }
+        .bottom-text { color: #666; line-height: 1.9; }
+        .conclusion-points { margin: 0; padding-left: 20px; color: #666; line-height: 1.9; }
+        .conclusion-points li { margin-bottom: 8px; }
+        .conclusion-points li:last-child { margin-bottom: 0; }
+        .pair-hint { margin-top: 10px; color: #888; }
+        @media (max-width: 767px) {
+            .summary-title { font-size: 20px; }
+            .control-label { padding-top: 0; margin-bottom: 8px; }
+            .tab-content { padding: 16px; }
+            .kv-table th { width: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+<link rel="stylesheet" href="../static/policylab/nav.css">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="../index.html"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="../learn/index.html">算法轻松学</a>
+        <a href="index.html">原理详解</a>
+        <a href="../datainfo/index.html">数据概览</a>
+        <a href="../results/index.html">训练结果</a>
+        <a href="../compare/index.html">算法对比</a>
+    </div>
+</nav>
+
+<div class="container page-wrap">
+    <div class="panel top-panel">
+        <div class="panel-body">
+            <h2 class="summary-title">CQL / CQL_NB</h2>
+            <p class="summary-text">这一组方法属于更典型的离线强化学习算法：不仅学策略，还学 Q 值，并通过保守约束减少“离线数据外动作”的高估问题。</p>
+
+            <div class="row control-row">
+                <div class="col-sm-2 control-label">选择算法对</div>
+                <div class="col-sm-5">
+                    <select class="form-control" id="pair-select">
+
+                            <option value="bc" >BC / BC_NB</option>
+
+                            <option value="cql" selected>CQL / CQL_NB</option>
+
+                            <option value="ddpg" >DDPG / DDPG_NB</option>
+
+                            <option value="sac" >SAC / SAC_NB</option>
+
+                            <option value="td3" >TD3 / TD3_NB</option>
+
+                    </select>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="panel section-panel">
+        <div class="panel-body" style="padding-bottom:0;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#tab-beginner" aria-controls="tab-beginner" role="tab" data-toggle="tab">小白先看</a></li>
+                <li role="presentation"><a href="#tab-flow" aria-controls="tab-flow" role="tab" data-toggle="tab">方法流程</a></li>
+                <li role="presentation"><a href="#tab-design" aria-controls="tab-design" role="tab" data-toggle="tab">核心设计</a></li>
+                <li role="presentation"><a href="#tab-params" aria-controls="tab-params" role="tab" data-toggle="tab">参数说明</a></li>
+                <li role="presentation"><a href="#tab-code" aria-controls="tab-code" role="tab" data-toggle="tab">代码块讲解</a></li>
+                <li role="presentation"><a href="#tab-io" aria-controls="tab-io" role="tab" data-toggle="tab">输入输出与产物</a></li>
+                <li role="presentation"><a href="#tab-compare" aria-controls="tab-compare" role="tab" data-toggle="tab">Base / NB 对比</a></li>
+                <li role="presentation"><a href="#tab-conclusion" aria-controls="tab-conclusion" role="tab" data-toggle="tab">小结</a></li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+
+            <div role="tabpanel" class="tab-pane fade in active" id="tab-beginner">
+                <h3 class="section-title">小白先看</h3>
+                <p class="section-lead">可以把 CQL 理解成“学动作之前，先更谨慎地评价动作值不值”。CQL_NB 则是在这个基础上进一步增强训练稳定性。</p>
+                <div class="row">
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">CQL：学习 actor 和双 critic，并给 critic 加保守约束。</p></div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">CQL_NB：在 CQL 上加入更多动作参与 penalty，并引入类似 TD3 的 target smoothing。</p></div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">比 BC 更复杂，但更接近真正的离线强化学习方法。</p></div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-flow">
+                <h3 class="section-title">方法流程</h3>
+                <ol class="steps">
+
+                    <li>读取包含 state、action、reward、next_state、done 的完整 transition 数据。</li>
+
+                    <li>划分训练集与验证集。</li>
+
+                    <li>计算状态标准化参数和 reward 统计量。</li>
+
+                    <li>构建 actor、critic1、critic2 及 target critics。</li>
+
+                    <li>更新 critic，并加上 CQL penalty。</li>
+
+                    <li>更新 actor，并用 BC 项辅助训练。</li>
+
+                    <li>保存最佳模型、日志和曲线图。</li>
+
+                </ol>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-design">
+                <h3 class="section-title">核心设计</h3>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>数据处理</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        CQL 不只看“当前应该做什么动作”，还要看“做完这个动作后会到哪里、能拿多少奖励”。所以它需要一整条状态转移记录。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        两者都使用完整 transition：observations、actions、rewards、next_observations、terminals，用它们构造 TD target 和 critic 训练样本。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>网络结构</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        actor 像做动作的学生，critic 像评分老师。两个 critic 相当于两个老师同时打分，最后取更谨慎的那个分数，避免把动作评价得太乐观。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        两者都包含一个 actor 和两个 critic；critic 输入 state+action 输出 Q 值，actor 输入 state 输出 action；target critics 用软更新提供更稳定的目标值。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>保守约束</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        离线数据里没出现过的动作，模型其实没亲自试过。CQL 的核心就是提醒 critic：别随便给没见过的动作打高分。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        CQL 用 logsumexp penalty 压低随机动作和当前策略动作的 Q 值，同时保留数据动作的价值；CQL_NB 进一步把 next policy 动作也纳入 penalty 覆盖范围。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>稳定性增强</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        这一组方法很容易因为 Q 值估计不稳而抖动，所以会对奖励、梯度和目标动作都做处理，让训练过程更像慢慢校准而不是猛跳。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        两者都支持 reward scaling、梯度裁剪和 BC 辅助 actor；CQL_NB 额外加入 target smoothing noise，在 next action 上加截断噪声后再计算目标 Q。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-params">
+                <h3 class="section-title">参数说明</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>常用参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+
+                                    <tr><th>dataset_path</th><td>数据集路径</td></tr>
+
+                                    <tr><th>batch_size</th><td>批大小</td></tr>
+
+                                    <tr><th>num_epochs</th><td>训练轮数</td></tr>
+
+                                    <tr><th>lr_actor / lr_critic</th><td>actor/critic 学习率</td></tr>
+
+                                    <tr><th>gamma / tau</th><td>折扣系数与软更新系数</td></tr>
+
+                                    <tr><th>hidden_layers</th><td>隐藏层结构</td></tr>
+
+                                    <tr><th>output_dir</th><td>输出目录</td></tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>进阶参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+
+                                    <tr><th>lambda_cql</th><td>保守约束权重</td></tr>
+
+                                    <tr><th>num_random_actions</th><td>构造 penalty 时采样的随机动作数</td></tr>
+
+                                    <tr><th>alpha_bc / bc_coef</th><td>actor 中 BC 相关参数</td></tr>
+
+                                    <tr><th>reward_scale</th><td>是否对 reward 标准化</td></tr>
+
+                                    <tr><th>CQL_NB.policy_noise / noise_clip</th><td>target smoothing 噪声参数</td></tr>
+
+                                </tbody>
+                            </table>
+                            <p class="mini-note">建议先理解常用参数，再看进阶参数。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-code">
+                <h3 class="section-title">代码块讲解</h3>
+
+                <div class="soft-card">
+                    <h4>AIcodes/CQL.py -&gt; Config</h4>
+                    <p style="margin-bottom:0;">定义 CQL 训练参数并保存配置。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/CQL.py -&gt; load_hdf5_dataset</h4>
+                    <p style="margin-bottom:0;">加载完整 transition 数据。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/CQL.py -&gt; compute_cql_penalty</h4>
+                    <p style="margin-bottom:0;">构造保守 Q 约束。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/CQL.py -&gt; train_cql_improved</h4>
+                    <p style="margin-bottom:0;">执行双 critic + actor 训练。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/CQL_NB.py -&gt; compute_cql_penalty</h4>
+                    <p style="margin-bottom:0;">加入 next policy action 和 smoothing noise。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/CQL_NB.py -&gt; train_cql_improved</h4>
+                    <p style="margin-bottom:0;">把 target smoothing 和更丰富的 penalty 用到训练中。</p>
+                </div>
+
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-io">
+                <h3 class="section-title">输入输出与产物</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输入</h4>
+                            <ul><li>代码文件：AIcodes/CQL.py、AIcodes/CQL_NB.py</li><li>数据文件：halfcheetah_medium-v2.hdf5</li><li>完整 transition 输入：state/action/reward/next_state/done</li></ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输出与产物</h4>
+                            <ul><li>checkpoints/CQL/ 或 checkpoints/CQL_NB/</li><li>best_model.pt</li><li>train_config.json</li><li>training_log.csv</li><li>critic_loss_curve.png</li><li>actor_loss_curve.png</li><li>cql_penalty_curve.png</li></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-compare">
+                <h3 class="section-title">Base / NB 对比</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover compare-table">
+                        <thead>
+                        <tr><th>对比项</th><th>CQL</th><th>CQL_NB</th></tr>
+                        </thead>
+                        <tbody>
+
+                            <tr><th>核心思路</th><td>标准保守 Q 学习 + BC 辅助 actor</td><td>在 CQL 基础上增加更强的 penalty 覆盖和 smoothing</td></tr>
+
+                            <tr><th>Penalty 动作集合</th><td>随机动作 + 当前策略动作</td><td>随机动作 + 当前策略动作 + next policy 动作</td></tr>
+
+                            <tr><th>稳定性设计</th><td>reward scaling、双 critic、软更新</td><td>额外加入 TD3 风格 target smoothing</td></tr>
+
+                            <tr><th>适合理解</th><td>理解离线 RL 中“保守”的意义</td><td>理解如何在基线 CQL 上继续增强稳定性</td></tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-conclusion">
+                <h3 class="section-title">小结</h3>
+                <div class="soft-card">
+
+                        <ul class="conclusion-points">
+
+                                <li>建议先把 CQL 理解成“先给动作打分，再决定怎么学动作”：critic 负责判断动作值不值，actor 再根据这个评价调整策略。</li>
+
+                                <li>CQL 的核心价值是保守：离线数据里没出现过的动作不能随便给高分，否则策略可能学到数据外的危险动作。</li>
+
+                                <li>CQL_NB 在 CQL 基础上扩大 penalty 覆盖范围，并加入 target smoothing，让随机动作、当前策略动作和下一步策略动作都被更谨慎地约束。</li>
+
+                                <li>这一组适合理解离线强化学习为什么重视 critic：不是只看动作像不像，还要看 Q 值估计是否稳定、是否过度乐观。</li>
+
+                        </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    $('#pair-select').on('change', function () {
+        window.location.href = $(this).val() + '.html';
+    });
+})();
+</script>
+</body>
+</html>

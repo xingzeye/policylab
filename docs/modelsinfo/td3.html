@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>算法介绍</title>
+    <link rel="icon" href="../static/policylab/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        body { background: #f6f7fb; font-family: "Microsoft YaHei", Arial, sans-serif; color: #333; }
+        .page-wrap { padding: 24px 0 36px; }
+        .top-panel, .section-panel { border: 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+        .top-panel .panel-body { padding: 22px 24px; }
+        .summary-title { margin: 0 0 10px; font-size: 24px; font-weight: 700; }
+        .summary-text { color: #666; line-height: 1.85; margin-bottom: 0; }
+        .control-row { margin-top: 16px; }
+        .control-label { padding-top: 8px; font-weight: 700; }
+        .nav-tabs { border-bottom: 1px solid #ddd; }
+        .nav-tabs > li > a { color: #555; font-weight: 700; }
+        .nav-tabs > li.active > a,
+        .nav-tabs > li.active > a:hover,
+        .nav-tabs > li.active > a:focus { color: #337ab7; }
+        .tab-content { background: #fff; border: 1px solid #ddd; border-top: 0; padding: 22px; border-radius: 0 0 8px 8px; }
+        .section-title { margin: 0 0 14px; font-size: 22px; font-weight: 700; }
+        .section-lead { color: #666; line-height: 1.9; margin-bottom: 18px; }
+        .soft-card { background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
+        .soft-card h4 { margin-top: 0; margin-bottom: 10px; font-size: 16px; font-weight: 700; }
+        .soft-card p, .soft-card li { color: #666; line-height: 1.8; }
+        .design-layer { margin-bottom: 10px; }
+        .design-layer:last-child { margin-bottom: 0; }
+        .design-label { display: inline-block; margin-bottom: 4px; font-weight: 700; color: #337ab7; }
+        .design-label.tech { color: #555; }
+        .steps { counter-reset: item; list-style: none; padding-left: 0; }
+        .steps li { position: relative; padding: 12px 12px 12px 50px; margin-bottom: 12px; background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; }
+        .steps li:before { counter-increment: item; content: counter(item); position: absolute; left: 15px; top: 10px; width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; background: #337ab7; color: #fff; font-weight: 700; }
+        .kv-table th { width: 220px; background: #fafafa; }
+        .mini-note { color: #888; margin-top: 8px; }
+        .compare-table th { white-space: nowrap; }
+        .bottom-text { color: #666; line-height: 1.9; }
+        .conclusion-points { margin: 0; padding-left: 20px; color: #666; line-height: 1.9; }
+        .conclusion-points li { margin-bottom: 8px; }
+        .conclusion-points li:last-child { margin-bottom: 0; }
+        .pair-hint { margin-top: 10px; color: #888; }
+        @media (max-width: 767px) {
+            .summary-title { font-size: 20px; }
+            .control-label { padding-top: 0; margin-bottom: 8px; }
+            .tab-content { padding: 16px; }
+            .kv-table th { width: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+<link rel="stylesheet" href="../static/policylab/nav.css">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="../index.html"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="../learn/index.html">算法轻松学</a>
+        <a href="index.html">原理详解</a>
+        <a href="../datainfo/index.html">数据概览</a>
+        <a href="../results/index.html">训练结果</a>
+        <a href="../compare/index.html">算法对比</a>
+    </div>
+</nav>
+
+<div class="container page-wrap">
+    <div class="panel top-panel">
+        <div class="panel-body">
+            <h2 class="summary-title">TD3 / TD3_NB</h2>
+            <p class="summary-text">这一组方法体现了双 critic、目标动作加噪声和延迟策略更新这些经典稳定化技巧。</p>
+
+            <div class="row control-row">
+                <div class="col-sm-2 control-label">选择算法对</div>
+                <div class="col-sm-5">
+                    <select class="form-control" id="pair-select">
+
+                            <option value="bc" >BC / BC_NB</option>
+
+                            <option value="cql" >CQL / CQL_NB</option>
+
+                            <option value="ddpg" >DDPG / DDPG_NB</option>
+
+                            <option value="sac" >SAC / SAC_NB</option>
+
+                            <option value="td3" selected>TD3 / TD3_NB</option>
+
+                    </select>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="panel section-panel">
+        <div class="panel-body" style="padding-bottom:0;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#tab-beginner" aria-controls="tab-beginner" role="tab" data-toggle="tab">小白先看</a></li>
+                <li role="presentation"><a href="#tab-flow" aria-controls="tab-flow" role="tab" data-toggle="tab">方法流程</a></li>
+                <li role="presentation"><a href="#tab-design" aria-controls="tab-design" role="tab" data-toggle="tab">核心设计</a></li>
+                <li role="presentation"><a href="#tab-params" aria-controls="tab-params" role="tab" data-toggle="tab">参数说明</a></li>
+                <li role="presentation"><a href="#tab-code" aria-controls="tab-code" role="tab" data-toggle="tab">代码块讲解</a></li>
+                <li role="presentation"><a href="#tab-io" aria-controls="tab-io" role="tab" data-toggle="tab">输入输出与产物</a></li>
+                <li role="presentation"><a href="#tab-compare" aria-controls="tab-compare" role="tab" data-toggle="tab">Base / NB 对比</a></li>
+                <li role="presentation"><a href="#tab-conclusion" aria-controls="tab-conclusion" role="tab" data-toggle="tab">小结</a></li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+
+            <div role="tabpanel" class="tab-pane fade in active" id="tab-beginner">
+                <h3 class="section-title">小白先看</h3>
+                <p class="section-lead">如果把 DDPG 理解成“critic 指导 actor”，那 TD3 可以看成“让这个指导过程更稳一些”。TD3_NB 则在此基础上再加入 BC 正则。</p>
+                <div class="row">
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">TD3：双 critic，目标动作加噪声，actor 延迟更新。</p></div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">TD3_NB：在 TD3 主线上加入 BC 项和 reward scaling。</p></div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">很适合用来展示“经典稳定化技巧 + 离线增强”的组合。</p></div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-flow">
+                <h3 class="section-title">方法流程</h3>
+                <ol class="steps">
+
+                    <li>读取完整 transition 数据。</li>
+
+                    <li>划分训练集与验证集。</li>
+
+                    <li>计算状态标准化；TD3_NB 还计算 reward 统计量。</li>
+
+                    <li>构建 actor、critic 与 target networks。</li>
+
+                    <li>先更新 critic，再按 policy_delay 更新 actor。</li>
+
+                    <li>保存训练日志、图像与最佳模型。</li>
+
+                </ol>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-design">
+                <h3 class="section-title">核心设计</h3>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>双 critic</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        TD3 像找两个老师给同一个动作打分，然后采用更低的分数。这样模型不会因为某个老师过于乐观就误以为动作特别好。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        两者都使用两个 Q 网络，并在目标值中取 min(Q1, Q2)，这是 TD3 用来降低 Q 值高估的核心技巧。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>目标动作扰动</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        给目标动作加一点小噪声，相当于检查“附近动作是不是也还可以”。这样 actor 不容易钻某个 critic 评分尖峰的空子。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        两者都会对 target action 加 policy_noise，并用 noise_clip 截断，再将动作限制在合法范围内，用于平滑 target critic 的估计。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>延迟更新</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        critic 要先多学几步，把评分标准变稳一点，actor 再根据这个评分去改动作。否则 actor 太早跟着不稳定评分跑，训练会抖。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        actor 不会每一步都更新，而是按 policy_delay 延迟更新；critic 更新更频繁，actor 和 target networks 按固定间隔更新。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>NB 增强</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        NB 版在“追求高 Q 值”的同时，加上“别偏离数据动作太远”的提醒，更适合不能在线试错的离线数据训练。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        TD3_NB 在 actor 更新中组合 q_term 与 bc_term，并支持 reward_scale，让策略优化、行为克隆约束和奖励尺度处理同时参与训练。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-params">
+                <h3 class="section-title">参数说明</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>常用参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+
+                                    <tr><th>data_path / save_dir</th><td>路径参数</td></tr>
+
+                                    <tr><th>batch_size</th><td>批大小</td></tr>
+
+                                    <tr><th>lr_actor / lr_critic</th><td>学习率</td></tr>
+
+                                    <tr><th>gamma / tau</th><td>折扣与软更新</td></tr>
+
+                                    <tr><th>policy_noise / noise_clip</th><td>目标动作噪声</td></tr>
+
+                                    <tr><th>policy_delay</th><td>延迟更新步长</td></tr>
+
+                                    <tr><th>hidden</th><td>隐藏层结构</td></tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>进阶参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+
+                                    <tr><th>max_action</th><td>动作范围上限</td></tr>
+
+                                    <tr><th>TD3_NB.alpha_bc / bc_coef</th><td>BC 正则参数</td></tr>
+
+                                    <tr><th>TD3_NB.reward_scale</th><td>reward 标准化</td></tr>
+
+                                    <tr><th>grad_clip / weight_decay</th><td>训练稳定性参数</td></tr>
+
+                                </tbody>
+                            </table>
+                            <p class="mini-note">建议先理解常用参数，再看进阶参数。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-code">
+                <h3 class="section-title">代码块讲解</h3>
+
+                <div class="soft-card">
+                    <h4>AIcodes/TD3.py -&gt; TD3Trainer</h4>
+                    <p style="margin-bottom:0;">Base 版本训练器，实现双 critic 与延迟更新。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/TD3.py -&gt; train_step</h4>
+                    <p style="margin-bottom:0;">目标动作加噪声并更新 critic，再按延迟更新 actor。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/TD3_NB.py -&gt; TD3NBTrainer</h4>
+                    <p style="margin-bottom:0;">NB 版本训练器，在 actor 更新中引入 BC 项。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/TD3_NB.py -&gt; train_step</h4>
+                    <p style="margin-bottom:0;">将 q_term 与 bc_term 组合成 actor_loss。</p>
+                </div>
+
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-io">
+                <h3 class="section-title">输入输出与产物</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输入</h4>
+                            <ul><li>代码文件：AIcodes/TD3.py、AIcodes/TD3_NB.py</li><li>数据文件：halfcheetah_medium-v2.hdf5</li><li>完整 transition 数据</li></ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输出与产物</h4>
+                            <ul><li>checkpoints/TD3/ 或 checkpoints/TD3_NB/</li><li>best_model.pt</li><li>train_config.json</li><li>training_log.csv</li><li>critic_loss.png / actor_loss.png / q_value.png</li></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-compare">
+                <h3 class="section-title">Base / NB 对比</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover compare-table">
+                        <thead>
+                        <tr><th>对比项</th><th>TD3</th><th>TD3_NB</th></tr>
+                        </thead>
+                        <tbody>
+
+                            <tr><th>核心主线</th><td>经典 TD3 稳定化训练</td><td>TD3 + BC 正则</td></tr>
+
+                            <tr><th>critic 设计</th><td>双 critic</td><td>双 critic</td></tr>
+
+                            <tr><th>actor 更新</th><td>纯 Q 导向更新</td><td>Q 项 + BC 项</td></tr>
+
+                            <tr><th>额外增强</th><td>目标动作加噪声、延迟更新</td><td>再加 reward_scale 与 BC 正则</td></tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-conclusion">
+                <h3 class="section-title">小结</h3>
+                <div class="soft-card">
+
+                        <ul class="conclusion-points">
+
+                                <li>TD3 可以看成更稳的 DDPG：它用双 critic、目标动作加噪声和延迟更新，尽量减少训练中的 Q 值高估和策略抖动。</li>
+
+                                <li>目标动作扰动让模型不要只盯着某个很尖锐的高分动作，延迟更新则让 critic 先学稳一点，再指导 actor。</li>
+
+                                <li>TD3_NB 在 TD3 主线基础上加入 BC 正则和 reward scaling，让 actor 在追求高 Q 值时仍然靠近离线数据动作。</li>
+
+                                <li>这一组适合展示“经典稳定化技巧 + 离线约束”的组合：先让评价更稳，再让策略别偏离数据太远。</li>
+
+                        </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    $('#pair-select').on('change', function () {
+        window.location.href = $(this).val() + '.html';
+    });
+})();
+</script>
+</body>
+</html>

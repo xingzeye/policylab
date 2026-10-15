@@ -1,0 +1,31 @@
+{
+  "hdf5_file": "halfcheetah_medium-v2.hdf5",
+  "output_dir": "checkpoints/DDPG",
+  "batch_size": 256,
+  "num_epochs": 150,
+  "lr_actor": 0.0003,
+  "lr_critic": 0.0003,
+  "gamma": 0.99,
+  "tau": 0.005,
+  "hidden": [
+    256,
+    256
+  ],
+  "seed": 42,
+  "val_ratio": 0.1,
+  "weight_decay": 0.0001,
+  "grad_clip": 5.0,
+  "num_workers": 0,
+  "device": "cuda",
+  "reward_scale": true,
+  "policy_noise": 0.2,
+  "noise_clip": 0.5,
+  "policy_delay": 2,
+  "aw_lambda": 1.0,
+  "weight_clip": 20.0,
+  "best_model_name": "best_model.pt",
+  "records_csv_name": "training_records.csv",
+  "actor_curve_name": "actor_loss_curve.png",
+  "critic_curve_name": "critic_loss_curve.png",
+  "weight_curve_name": "weight_curve.png"
+}

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>数据集介绍</title>
+    <link rel="icon" href="{% static 'policylab/favicon.svg' %}" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+
+    <style>
+        body {
+            background: #f3f5f7;
+            font-family: "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #333;
+        }
+        .page-wrap {
+            max-width: 1480px;
+            margin: 0 auto;
+            padding: 24px 16px 40px;
+        }
+        .stats-wrap {
+            margin-bottom: 18px;
+        }
+        .summary-card {
+            border: 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .05);
+            overflow: hidden;
+            margin-bottom: 18px;
+            background: #fff;
+        }
+        .summary-card .panel-body {
+            padding: 18px 18px 16px;
+        }
+        .summary-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        .summary-value {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 6px;
+        }
+        .summary-desc {
+            color: #888;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .main-tabs-wrap {
+            background: #fff;
+            border: 1px solid #e8edf2;
+            border-radius: 10px;
+            box-shadow: 0 3px 14px rgba(0, 0, 0, .04);
+            overflow: hidden;
+        }
+        .main-tabs {
+            background: #fafbfd;
+            padding: 0 12px;
+            border-bottom: 1px solid #e8edf2;
+        }
+        .main-tabs > li > a {
+            border: 0 !important;
+            border-radius: 0;
+            color: #555;
+            padding: 15px 18px;
+            font-weight: 600;
+        }
+        .main-tabs > li.active > a,
+        .main-tabs > li.active > a:focus,
+        .main-tabs > li.active > a:hover {
+            background: #fff;
+            color: #337ab7;
+            border-bottom: 2px solid #337ab7 !important;
+        }
+        .tab-pane-inner {
+            padding: 20px;
+        }
+        .section-desc {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+        .info-panel,
+        .soft-panel,
+        .chart-card {
+            border: 1px solid #e8edf2;
+            border-radius: 8px;
+            box-shadow: none;
+            margin-bottom: 18px;
+            background: #fff;
+        }
+        .info-panel .panel-heading,
+        .soft-panel .panel-heading,
+        .chart-card .panel-heading {
+            background: #fcfdff;
+            border-bottom: 1px solid #edf1f5;
+            font-weight: 600;
+            padding: 12px 15px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .meta-table th,
+        .struct-table th,
+        .group-table th,
+        .algo-table th {
+            background: #fafafa;
+            white-space: nowrap;
+        }
+        .meta-table th {
+            width: 150px;
+        }
+        .meta-table td,
+        .struct-table td,
+        .group-table td,
+        .algo-table td {
+            vertical-align: middle !important;
+        }
+        .list-group-item small {
+            color: #888;
+        }
+        .preview-table-wrap {
+            max-height: 460px;
+            overflow: auto;
+            border: 1px solid #edf1f5;
+            border-radius: 6px;
+        }
+        .preview-toolbar {
+            margin-bottom: 12px;
+        }
+        .preview-toolbar .label {
+            margin-right: 6px;
+            padding: 5px 8px;
+        }
+        .thumb-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -9px;
+            margin-right: -9px;
+        }
+        .thumb-col {
+            padding-left: 9px;
+            padding-right: 9px;
+            margin-bottom: 18px;
+            display: flex;
+        }
+        .chart-card {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 0;
+        }
+        .chart-card .panel-body {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .chart-thumb-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 6px;
+            background: #f8f8f8;
+            border: 1px solid #edf1f5;
+            cursor: zoom-in;
+            height: 230px;
+        }
+        .chart-thumb-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            transition: transform .25s ease;
+        }
+        .chart-thumb-wrap:hover img {
+            transform: scale(1.02);
+        }
+        .chart-meta {
+            margin-top: 10px;
+            color: #666;
+            line-height: 1.8;
+            min-height: 82px;
+        }
+        .chart-actions {
+            margin-top: auto;
+        }
+        .chart-actions .btn {
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        .file-path-box {
+            padding: 10px 12px;
+            background: #f8fafc;
+            border: 1px dashed #d9e2ec;
+            border-radius: 6px;
+            color: #666;
+            word-break: break-all;
+        }
+        .empty-state {
+            padding: 30px 20px;
+            text-align: center;
+            color: #888;
+        }
+        .table-note {
+            color: #888;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .modal-chart-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .chart-modal .modal-dialog {
+            width: 92%;
+            max-width: 1400px;
+            margin: 24px auto;
+        }
+        .chart-modal .modal-content {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .chart-modal .modal-body {
+            background: #111;
+            text-align: center;
+            padding: 14px;
+        }
+        .chart-modal img {
+            max-width: 100%;
+            max-height: 78vh;
+            border-radius: 4px;
+            background: #fff;
+        }
+        .back-top {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 99;
+            display: none;
+            border-radius: 50px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.15);
+        }
+        @media (max-width: 991px) {
+            .thumb-grid {
+                display: block;
+                margin-left: -15px;
+                margin-right: -15px;
+            }
+            .thumb-col {
+                display: block;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            .chart-thumb-wrap {
+                height: 210px;
+            }
+            .chart-modal .modal-dialog {
+                width: 96%;
+                margin: 12px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+{% include 'includes/site_nav.html' %}
+<div class="container-fluid page-wrap">
+    <div class="row stats-wrap">
+        <div class="col-md-3 col-sm-6">
+            <div class="panel summary-card">
+                <div class="panel-body">
+                    <div class="summary-label">状态信息个数</div>
+                    <div class="summary-value">{{ dataset.obs_dim }}</div>
+                    <div class="summary-desc">每条数据里，用来描述当前状态的数字个数</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="panel summary-card">
+                <div class="panel-body">
+                    <div class="summary-label">动作信息个数</div>
+                    <div class="summary-value">{{ dataset.action_dim }}</div>
+                    <div class="summary-desc">每条数据里，动作由几个数字组成</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="panel summary-card">
+                <div class="panel-body">
+                    <div class="summary-label">表格总列数</div>
+                    <div class="summary-value">{{ dataset.csv_column_count }}</div>
+                    <div class="summary-desc">状态 + 动作 + 奖励 + 结束标记</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="panel summary-card">
+                <div class="panel-body">
+                    <div class="summary-label">表格总行数</div>
+                    <div class="summary-value">
+                        {% if dataset.csv_row_count is not None %}
+                            {{ dataset.csv_row_count }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </div>
+                    <div class="summary-desc">当前 CSV 文件里的数据条数</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if dataset.is_preview %}
+        <div class="alert alert-info">当前展示已保存的数据快照：总行数来自完整 CSV，表格及下载文件仅包含前 8 条样本。完整数据集请在本地使用。</div>
+    {% endif %}
+    {% if missing_files %}
+        <div class="alert alert-warning">
+            <strong>提示：</strong> 当前缺少以下文件：
+            {% for name in missing_files %}
+                <span class="label label-warning" style="margin-right: 6px;">{{ name }}</span>
+            {% endfor %}
+            <div style="margin-top: 8px;">请将文件放到：<code>{{ dataset.media_dir }}</code></div>
+        </div>
+    {% endif %}
+
+    <div class="main-tabs-wrap">
+        <ul class="nav nav-tabs main-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#tab-overview" aria-controls="tab-overview" role="tab" data-toggle="tab">数据集概览</a>
+            </li>
+            <li role="presentation">
+                <a href="#tab-structure" aria-controls="tab-structure" role="tab" data-toggle="tab">数据内容说明</a>
+            </li>
+            <li role="presentation">
+                <a href="#tab-charts" aria-controls="tab-charts" role="tab" data-toggle="tab">数据可视化</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="tab-overview">
+                <div class="tab-pane-inner">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="panel info-panel">
+                                <div class="panel-heading">基础信息</div>
+                                <div class="panel-body">
+                                    <p class="section-desc">{{ dataset.description }}</p>
+                                    <table class="table table-bordered meta-table" style="margin-bottom: 0;">
+                                        <tbody>
+                                            <tr>
+                                                <th>数据集文件名</th>
+                                                <td>{{ dataset.dataset_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>数据集场景</th>
+                                                <td>{{ dataset.env_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>数据类型</th>
+                                                <td>{{ dataset.task_type }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>状态信息个数</th>
+                                                <td>{{ dataset.obs_dim }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>动作信息个数</th>
+                                                <td>{{ dataset.action_dim }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>表格总列数</th>
+                                                <td>{{ dataset.csv_column_count }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>表格总行数</th>
+                                                <td>
+                                                    {% if dataset.csv_row_count is not None %}
+                                                        {{ dataset.csv_row_count }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>文件存放位置</th>
+                                                <td><div class="file-path-box">{{ dataset.media_dir }}</div></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="panel soft-panel">
+                                <div class="panel-heading">已准备好的文件</div>
+                                <div class="panel-body">
+                                    <div class="list-group" style="margin-bottom: 14px;">
+                                        <div class="list-group-item">
+                                            <h5 class="list-group-item-heading" style="margin-top: 0;">CSV 表格文件</h5>
+                                            <p class="list-group-item-text">
+                                                {{ files.csv.name }}
+                                                <br><small>大小：{{ files.csv.size }}</small>
+                                            </p>
+                                            <div style="margin-top: 10px;">
+                                                {% if files.csv.exists %}
+                                                    <a href="{{ files.csv.url }}" target="_blank" class="btn btn-primary btn-sm">
+                                                        <span aria-hidden="true">⬇</span> {% if dataset.is_preview %}下载 8 条样本 CSV{% else %}下载 CSV{% endif %}
+                                                    </a>
+                                                {% else %}
+                                                    <button class="btn btn-default btn-sm" disabled>CSV 未找到</button>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item">
+                                            <h5 class="list-group-item-heading" style="margin-top: 0;">分析图片</h5>
+                                            <p class="list-group-item-text">
+                                                {{ files.obs_img.name }}<br>
+                                                {{ files.act_img.name }}<br>
+                                                {{ files.reward_img.name }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info" style="margin-bottom: 0;">
+                                        点击图片可以放大查看；点空白处或按 ESC 可以关闭大图。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel soft-panel" style="margin-bottom: 0;">
+                        <div class="panel-heading">CSV 内容预览</div>
+                        <div class="panel-body">
+                            <div class="preview-toolbar">
+                                <span class="label label-default">只显示前 8 行</span>
+                                <span class="label label-info">可左右滚动查看</span>
+                            </div>
+                            {% if csv_preview_error %}
+                                <div class="alert alert-danger">CSV 读取失败：{{ csv_preview_error }}</div>
+                            {% elif preview_columns and preview_rows %}
+                                <div class="preview-table-wrap">
+                                    <table class="table table-bordered table-striped table-hover table-condensed" style="margin-bottom: 0;">
+                                        <thead>
+                                            <tr>
+                                                {% for col in preview_columns %}
+                                                    <th>{{ col }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in preview_rows %}
+                                                <tr>
+                                                    {% for cell in row %}
+                                                        <td>{{ cell }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="table-note">这里只是预览，完整内容请下载 CSV 文件查看。</div>
+                            {% else %}
+                                <div class="empty-state">当前没有可预览的 CSV 数据。</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="tab-structure">
+                <div class="tab-pane-inner">
+                    <div class="panel info-panel">
+                        <div class="panel-heading">原始数据里有哪些内容</div>
+                        <div class="panel-body">
+                            <p class="section-desc">
+                                这一部分说明原始数据文件里都存了什么，以及导出成 CSV 后分别放在哪些列中。
+                                看懂这一页后，就能知道后面的训练代码到底在读取哪些数据。
+                            </p>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped struct-table" style="margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th>原始字段名</th>
+                                            <th>在 CSV 里的位置</th>
+                                            <th>数据大小说明</th>
+                                            <th>这部分表示什么</th>
+                                            <th>哪些算法会用到</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in field_rows %}
+                                            <tr>
+                                                <td><code>{{ row.field_name }}</code></td>
+                                                <td>{{ row.csv_mapping }}</td>
+                                                <td>{{ row.shape_desc }}</td>
+                                                <td>{{ row.meaning }}</td>
+                                                <td>{{ row.used_by }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="panel soft-panel">
+                                <div class="panel-heading">导出表格怎么分块</div>
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped group-table" style="margin-bottom: 0;">
+                                            <thead>
+                                                <tr>
+                                                    <th>分组名称</th>
+                                                    <th>列名前缀</th>
+                                                    <th>列数</th>
+                                                    <th>列范围</th>
+                                                    <th>说明</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for row in csv_groups %}
+                                                    <tr>
+                                                        <td>{{ row.group_name }}</td>
+                                                        <td><code>{{ row.prefix }}</code></td>
+                                                        <td>{{ row.count }}</td>
+                                                        <td>{{ row.range_text }}</td>
+                                                        <td>{{ row.description }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="panel soft-panel">
+                                <div class="panel-heading">算法一般会读取哪些内容</div>
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped algo-table" style="margin-bottom: 0;">
+                                            <thead>
+                                                <tr>
+                                                    <th>算法</th>
+                                                    <th>通常需要的数据</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for row in algo_requirements %}
+                                                    <tr>
+                                                        <td>{{ row.algo }}</td>
+                                                        <td>{{ row.required_fields }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="table-note">简单理解：有的算法只需要“状态和动作”，有的还需要“奖励、下一步状态、是否结束”。</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="tab-charts">
+                <div class="tab-pane-inner">
+                    <p class="section-desc">
+                        这里用 3 张图帮你快速了解这份数据集。
+                        如果你不懂专业术语，可以直接把它理解为：
+                        第一张看“状态数据长什么样”，第二张看“动作数据长什么样”，第三张看“奖励和结束情况”。
+                    </p>
+
+                    <div class="thumb-grid">
+                        <div class="col-md-4 col-sm-6 thumb-col">
+                            <div class="panel chart-card">
+                                <div class="panel-heading">状态数据分布图</div>
+                                <div class="panel-body">
+                                    {% if files.obs_img.exists %}
+                                        <a class="chart-thumb-wrap js-chart-preview" href="javascript:;" data-title="状态数据分布图" data-src="{{ files.obs_img.url }}">
+                                            <img src="{{ files.obs_img.url }}" alt="observations_subplots">
+                                        </a>
+                                        <div class="chart-meta">
+                                            这张图展示每个状态数值大概分布在哪些范围，方便判断数据是不是很集中、很分散，或者有没有明显偏移。<br>
+                                            <small>文件：{{ files.obs_img.name }} / {{ files.obs_img.size }}</small>
+                                        </div>
+                                        <div class="chart-actions">
+                                            <button type="button" class="btn btn-primary btn-sm js-chart-preview" data-title="状态数据分布图" data-src="{{ files.obs_img.url }}">
+                                                <span aria-hidden="true">🔍</span> 放大查看
+                                            </button>
+                                            <a href="{{ files.obs_img.url }}" target="_blank" class="btn btn-default btn-sm">新窗口打开</a>
+                                        </div>
+                                    {% else %}
+                                        <div class="empty-state">状态数据分布图未找到。</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6 thumb-col">
+                            <div class="panel chart-card">
+                                <div class="panel-heading">动作数据分布图</div>
+                                <div class="panel-body">
+                                    {% if files.act_img.exists %}
+                                        <a class="chart-thumb-wrap js-chart-preview" href="javascript:;" data-title="动作数据分布图" data-src="{{ files.act_img.url }}">
+                                            <img src="{{ files.act_img.url }}" alt="actions_subplots">
+                                        </a>
+                                        <div class="chart-meta">
+                                            这张图展示动作值大多落在哪些范围，能帮助判断动作是不是经常接近最大值或最小值。<br>
+                                            <small>文件：{{ files.act_img.name }} / {{ files.act_img.size }}</small>
+                                        </div>
+                                        <div class="chart-actions">
+                                            <button type="button" class="btn btn-primary btn-sm js-chart-preview" data-title="动作数据分布图" data-src="{{ files.act_img.url }}">
+                                                <span aria-hidden="true">🔍</span> 放大查看
+                                            </button>
+                                            <a href="{{ files.act_img.url }}" target="_blank" class="btn btn-default btn-sm">新窗口打开</a>
+                                        </div>
+                                    {% else %}
+                                        <div class="empty-state">动作数据分布图未找到。</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6 thumb-col">
+                            <div class="panel chart-card">
+                                <div class="panel-heading">奖励与结束情况图</div>
+                                <div class="panel-body">
+                                    {% if files.reward_img.exists %}
+                                        <a class="chart-thumb-wrap js-chart-preview" href="javascript:;" data-title="奖励与结束情况图" data-src="{{ files.reward_img.url }}">
+                                            <img src="{{ files.reward_img.url }}" alt="reward_terminal_subplots">
+                                        </a>
+                                        <div class="chart-meta">
+                                            这张图左边看奖励值大概集中在哪，右边看一段数据什么时候结束。<br>
+                                            <small>文件：{{ files.reward_img.name }} / {{ files.reward_img.size }}</small>
+                                        </div>
+                                        <div class="chart-actions">
+                                            <button type="button" class="btn btn-primary btn-sm js-chart-preview" data-title="奖励与结束情况图" data-src="{{ files.reward_img.url }}">
+                                                <span aria-hidden="true">🔍</span> 放大查看
+                                            </button>
+                                            <a href="{{ files.reward_img.url }}" target="_blank" class="btn btn-default btn-sm">新窗口打开</a>
+                                        </div>
+                                    {% else %}
+                                        <div class="empty-state">奖励与结束情况图未找到。</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="btn btn-primary back-top" id="backTopBtn">
+    <span aria-hidden="true">↑</span>
+</button>
+
+<div class="modal fade chart-modal" id="chartPreviewModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-chart-title" id="chartPreviewTitle">图像预览</h4>
+            </div>
+            <div class="modal-body">
+                <img id="chartPreviewImage" src="" alt="chart preview">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $(document).on('click', '.js-chart-preview', function () {
+            var title = $(this).data('title') || '图像预览';
+            var src = $(this).data('src');
+            if (!src) {
+                return;
+            }
+            $('#chartPreviewTitle').text(title);
+            $('#chartPreviewImage').attr('src', src).attr('alt', title);
+            $('#chartPreviewModal').modal('show');
+        });
+
+        $('#chartPreviewModal').on('click', function (e) {
+            if ($(e.target).hasClass('modal')) {
+                $(this).modal('hide');
+            }
+        });
+
+        var backTopBtn = $('#backTopBtn');
+        $(window).on('scroll', function () {
+            if ($(window).scrollTop() > 260) {
+                backTopBtn.fadeIn(180);
+            } else {
+                backTopBtn.fadeOut(180);
+            }
+        });
+
+        backTopBtn.on('click', function () {
+            $('html, body').animate({ scrollTop: 0 }, 280);
+        });
+    });
+</script>
+</body>
+</html>

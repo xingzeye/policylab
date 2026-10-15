@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>算法结果展示</title>
+    <link rel="icon" href="../static/policylab/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        body { background:#f6f7fb; font-family:"Microsoft YaHei",Arial,sans-serif; }
+        .page-wrap { max-width: 1280px; margin: 24px auto 40px; }
+        .page-title { margin:0 0 8px; font-size:30px; font-weight:600; }
+        .page-subtitle { color:#666; margin-bottom:18px; }
+        .toolbar-panel, .block-panel, .metric-card { border-radius:10px; border:1px solid #e8ebf2; box-shadow:0 2px 10px rgba(0,0,0,.04); }
+        .toolbar-panel .panel-body, .block-panel .panel-body { padding:20px; }
+        .metric-card { background:#fff; padding:18px; margin-bottom:18px; min-height:116px; }
+        .metric-card .label-text { color:#777; font-size:13px; }
+        .metric-card .value-text { margin-top:8px; font-size:26px; font-weight:700; color:#2c3e50; word-break:break-word; }
+        .metric-card .hint-text { margin-top:8px; color:#888; font-size:12px; }
+        .status-box { border-radius:10px; padding:16px 18px; margin-bottom:18px; }
+        .status-box h4 { margin-top:0; margin-bottom:8px; }
+        .status-success { background:#eef9f2; border:1px solid #c8ead3; }
+        .status-warning { background:#fff8e9; border:1px solid #f1db9a; }
+        .status-danger { background:#fff0f0; border:1px solid #f0c6c6; }
+        .nav-tabs { margin-bottom:18px; }
+        .chart-card { border:1px solid #e8ebf2; border-radius:10px; background:#fff; margin-bottom:18px; overflow:hidden; }
+        .chart-card .chart-head { padding:12px 15px; border-bottom:1px solid #eef1f6; font-weight:600; background:#fafbfe; }
+        .chart-card .chart-body { padding:14px; }
+        .chart-card img { width:100%; background:#fff; border:1px solid #eef1f6; border-radius:6px; }
+        .file-table td, .file-table th, .metric-table td, .metric-table th { vertical-align:middle !important; }
+        .beginner-box { background:#f7fbff; border:1px solid #dbeeff; border-radius:10px; padding:18px; line-height:1.9; }
+        .legend-chip { display:inline-block; margin:0 8px 8px 0; padding:6px 10px; border-radius:16px; background:#f1f3f8; color:#555; font-size:12px; }
+        .section-title { margin-top:0; margin-bottom:14px; font-size:20px; }
+        .mini-muted { color:#888; font-size:12px; }
+        pre.code-path { margin:0; background:#f8f8f8; border-radius:8px; border:1px solid #ececec; }
+    </style>
+</head>
+<body>
+
+<link rel="stylesheet" href="../static/policylab/nav.css">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="../index.html"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="../learn/index.html">算法轻松学</a>
+        <a href="../modelsinfo/index.html">原理详解</a>
+        <a href="../datainfo/index.html">数据概览</a>
+        <a href="index.html">训练结果</a>
+        <a href="../compare/index.html">算法对比</a>
+    </div>
+</nav>
+
+<div class="container-fluid page-wrap">
+    <h1 class="page-title">单算法结果展示</h1>
+    <div class="page-subtitle">先看结论，再看主图，最后再看原始文件。这样对初学者更友好。</div>
+
+
+        <div class="panel panel-default toolbar-panel">
+            <div class="panel-body">
+                <form method="get" class="form-inline">
+                    <div class="form-group">
+                        <label for="algorithm"><strong>选择算法：</strong></label>
+                        <select name="algorithm" id="algorithm" class="form-control" onchange="window.location.href = this.value + '.html'">
+
+                                <option value="BC" >BC</option>
+
+                                <option value="BC_NB" selected>BC_NB</option>
+
+                                <option value="CQL" >CQL</option>
+
+                                <option value="CQL_NB" >CQL_NB</option>
+
+                                <option value="DDPG" >DDPG</option>
+
+                                <option value="DDPG_NB" >DDPG_NB</option>
+
+                                <option value="SAC" >SAC</option>
+
+                                <option value="SAC_NB" >SAC_NB</option>
+
+                                <option value="TD3" >TD3</option>
+
+                                <option value="TD3_NB" >TD3_NB</option>
+
+                        </select>
+                    </div>
+                    <span class="legend-chip">当前目录：.\AIcodes/checkpoints/BC_NB</span>
+                    <span class="legend-chip">分类：模仿学习 / 改进方法</span>
+                    <span class="legend-chip">别名：加权行为克隆</span>
+                </form>
+            </div>
+        </div>
+
+        <div class="status-box status-success">
+            <h4>结果完整</h4>
+            <div>BC_NB 的模型文件和日志文件都已生成，可以先看摘要和主图。</div>
+        </div>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#overview" aria-controls="overview" role="tab" data-toggle="tab">结果概览</a></li>
+            <li role="presentation"><a href="#charts" aria-controls="charts" role="tab" data-toggle="tab">核心图表</a></li>
+            <li role="presentation"><a href="#metrics" aria-controls="metrics" role="tab" data-toggle="tab">详细指标</a></li>
+            <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">文件与下载</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="overview">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default block-panel">
+                            <div class="panel-body">
+                                <h3 class="section-title">小白先看</h3>
+                                <div class="beginner-box">
+                                    <p><strong>BC_NB</strong>：在 BC 基础上，对高回报轨迹给予更高权重，更重视“好样本”。</p>
+                                    <p style="margin-bottom:0;">这是加权版 BC。除了普通误差，还能看加权误差，用来判断“高质量样本”是否被更好地学习到了。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="metric-card">
+                            <div class="label-text">测试误差</div>
+                            <div class="value-text">0.016508</div>
+                            <div class="hint-text">这是当前页面最建议先看的结果值。</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="metric-card">
+                            <div class="label-text">加权 MSE</div>
+                            <div class="value-text">0.033184</div>
+                            <div class="hint-text">这是当前页面最建议先看的结果值。</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="metric-card">
+                            <div class="label-text">加权 MAE</div>
+                            <div class="value-text">0.113833</div>
+                            <div class="hint-text">这是当前页面最建议先看的结果值。</div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default block-panel">
+                            <div class="panel-body">
+                                <h3 class="section-title">怎么看这个结果</h3>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6"><div class="metric-card"><div class="label-text">第一步</div><div class="value-text" style="font-size:20px;">看状态</div><div class="hint-text">先判断是否完整、是否有 NaN。</div></div></div>
+                                    <div class="col-md-3 col-sm-6"><div class="metric-card"><div class="label-text">第二步</div><div class="value-text" style="font-size:20px;">看主指标</div><div class="hint-text">先看误差、critic loss 或关键验证指标。</div></div></div>
+                                    <div class="col-md-3 col-sm-6"><div class="metric-card"><div class="label-text">第三步</div><div class="value-text" style="font-size:20px;">看主图</div><div class="hint-text">曲线平稳通常比单个数值更重要。</div></div></div>
+                                    <div class="col-md-3 col-sm-6"><div class="metric-card"><div class="label-text">第四步</div><div class="value-text" style="font-size:20px;">再看文件</div><div class="hint-text">需要复核时再打开 csv、pt 和全部图片。</div></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="charts">
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <h3 class="section-title">核心图表</h3>
+                        <p class="mini-muted">主图优先展示最值得先看的结果图，进阶图放在后面。</p>
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Train Test Loss</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/BC_NB/train_test_loss.png" target="_blank">
+                                            <img src="../assets/results/BC_NB/train_test_loss.png" alt="Train Test Loss">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <h3 class="section-title">进阶图表</h3>
+                        <div class="row">
+
+                            <div class="col-md-4 col-sm-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Lr Curve</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/BC_NB/lr_curve.png" target="_blank">
+                                            <img src="../assets/results/BC_NB/lr_curve.png" alt="Lr Curve">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="metrics">
+
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <h3 class="section-title">最新训练记录</h3>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped metric-table">
+                                <thead>
+                                    <tr>
+                                        <th width="28%">名称</th>
+                                        <th width="22%">字段</th>
+                                        <th>数值</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>训练轮次</td>
+                                        <td><code>epoch</code></td>
+                                        <td>150.0000</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>训练误差</td>
+                                        <td><code>train_loss</code></td>
+                                        <td>0.016377</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>测试误差</td>
+                                        <td><code>test_loss</code></td>
+                                        <td>0.016508</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>lr</td>
+                                        <td><code>lr</code></td>
+                                        <td>0.000000</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <h3 class="section-title">评估汇总</h3>
+
+
+
+
+                        <h4>split = all</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped metric-table">
+                                <thead>
+                                    <tr>
+                                        <th width="28%">名称</th>
+                                        <th width="22%">字段</th>
+                                        <th>数值</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>MSE</td>
+                                        <td><code>mse</code></td>
+                                        <td>0.032942</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>MAE</td>
+                                        <td><code>mae</code></td>
+                                        <td>0.113563</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>加权 MSE</td>
+                                        <td><code>weighted_mse</code></td>
+                                        <td>0.032942</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>加权 MAE</td>
+                                        <td><code>weighted_mae</code></td>
+                                        <td>0.113562</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>最大绝对误差</td>
+                                        <td><code>max_abs_err</code></td>
+                                        <td>1.9925</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>split = train</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped metric-table">
+                                <thead>
+                                    <tr>
+                                        <th width="28%">名称</th>
+                                        <th width="22%">字段</th>
+                                        <th>数值</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>MSE</td>
+                                        <td><code>mse</code></td>
+                                        <td>0.032915</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>MAE</td>
+                                        <td><code>mae</code></td>
+                                        <td>0.113532</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>加权 MSE</td>
+                                        <td><code>weighted_mse</code></td>
+                                        <td>0.032915</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>加权 MAE</td>
+                                        <td><code>weighted_mae</code></td>
+                                        <td>0.113532</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>最大绝对误差</td>
+                                        <td><code>max_abs_err</code></td>
+                                        <td>1.9925</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>split = val</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped metric-table">
+                                <thead>
+                                    <tr>
+                                        <th width="28%">名称</th>
+                                        <th width="22%">字段</th>
+                                        <th>数值</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>MSE</td>
+                                        <td><code>mse</code></td>
+                                        <td>0.033184</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>MAE</td>
+                                        <td><code>mae</code></td>
+                                        <td>0.113833</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>加权 MSE</td>
+                                        <td><code>weighted_mse</code></td>
+                                        <td>0.033184</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>加权 MAE</td>
+                                        <td><code>weighted_mae</code></td>
+                                        <td>0.113833</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>最大绝对误差</td>
+                                        <td><code>max_abs_err</code></td>
+                                        <td>1.9855</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="files">
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <h3 class="section-title">输入输出与产物</h3>
+<pre class="code-path">AIcodes/BC_NB.py
+checkpoints/BC_NB/</pre>
+                        <p class="mini-muted" style="margin-top:12px;">这部分展示当前算法结果目录中的全部文件，图片可直接查看，其他文件可下载。</p>
+                    </div>
+                </div>
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped file-table">
+                                <thead>
+                                    <tr>
+                                        <th width="28%">文件名</th>
+                                        <th width="14%">大小</th>
+                                        <th width="20%">类型</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>best_model.pt</td>
+                                        <td>284.66 KB</td>
+                                        <td>
+                                            模型文件
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/BC_NB/best_model.pt" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/BC_NB/best_model.pt">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>evaluation_summary.csv</td>
+                                        <td>366.00 B</td>
+                                        <td>
+                                            日志/指标
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/BC_NB/evaluation_summary.csv" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/BC_NB/evaluation_summary.csv">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>lr_curve.png</td>
+                                        <td>34.13 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/BC_NB/lr_curve.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/BC_NB/lr_curve.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_config.json</td>
+                                        <td>519.00 B</td>
+                                        <td>
+                                            其他
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/BC_NB/train_config.json" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/BC_NB/train_config.json">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_test_loss.png</td>
+                                        <td>34.37 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/BC_NB/train_test_loss.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/BC_NB/train_test_loss.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>training_log.csv</td>
+                                        <td>9.97 KB</td>
+                                        <td>
+                                            日志/指标
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/BC_NB/training_log.csv" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/BC_NB/training_log.csv">下载</a>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+</body>
+</html>

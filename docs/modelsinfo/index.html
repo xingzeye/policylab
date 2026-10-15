@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>算法介绍</title>
+    <link rel="icon" href="../static/policylab/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        body { background: #f6f7fb; font-family: "Microsoft YaHei", Arial, sans-serif; color: #333; }
+        .page-wrap { padding: 24px 0 36px; }
+        .top-panel, .section-panel { border: 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+        .top-panel .panel-body { padding: 22px 24px; }
+        .summary-title { margin: 0 0 10px; font-size: 24px; font-weight: 700; }
+        .summary-text { color: #666; line-height: 1.85; margin-bottom: 0; }
+        .control-row { margin-top: 16px; }
+        .control-label { padding-top: 8px; font-weight: 700; }
+        .nav-tabs { border-bottom: 1px solid #ddd; }
+        .nav-tabs > li > a { color: #555; font-weight: 700; }
+        .nav-tabs > li.active > a,
+        .nav-tabs > li.active > a:hover,
+        .nav-tabs > li.active > a:focus { color: #337ab7; }
+        .tab-content { background: #fff; border: 1px solid #ddd; border-top: 0; padding: 22px; border-radius: 0 0 8px 8px; }
+        .section-title { margin: 0 0 14px; font-size: 22px; font-weight: 700; }
+        .section-lead { color: #666; line-height: 1.9; margin-bottom: 18px; }
+        .soft-card { background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
+        .soft-card h4 { margin-top: 0; margin-bottom: 10px; font-size: 16px; font-weight: 700; }
+        .soft-card p, .soft-card li { color: #666; line-height: 1.8; }
+        .design-layer { margin-bottom: 10px; }
+        .design-layer:last-child { margin-bottom: 0; }
+        .design-label { display: inline-block; margin-bottom: 4px; font-weight: 700; color: #337ab7; }
+        .design-label.tech { color: #555; }
+        .steps { counter-reset: item; list-style: none; padding-left: 0; }
+        .steps li { position: relative; padding: 12px 12px 12px 50px; margin-bottom: 12px; background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; }
+        .steps li:before { counter-increment: item; content: counter(item); position: absolute; left: 15px; top: 10px; width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; background: #337ab7; color: #fff; font-weight: 700; }
+        .kv-table th { width: 220px; background: #fafafa; }
+        .mini-note { color: #888; margin-top: 8px; }
+        .compare-table th { white-space: nowrap; }
+        .bottom-text { color: #666; line-height: 1.9; }
+        .conclusion-points { margin: 0; padding-left: 20px; color: #666; line-height: 1.9; }
+        .conclusion-points li { margin-bottom: 8px; }
+        .conclusion-points li:last-child { margin-bottom: 0; }
+        .pair-hint { margin-top: 10px; color: #888; }
+        @media (max-width: 767px) {
+            .summary-title { font-size: 20px; }
+            .control-label { padding-top: 0; margin-bottom: 8px; }
+            .tab-content { padding: 16px; }
+            .kv-table th { width: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+<link rel="stylesheet" href="../static/policylab/nav.css">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="../index.html"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="../learn/index.html">算法轻松学</a>
+        <a href="index.html">原理详解</a>
+        <a href="../datainfo/index.html">数据概览</a>
+        <a href="../results/index.html">训练结果</a>
+        <a href="../compare/index.html">算法对比</a>
+    </div>
+</nav>
+
+<div class="container page-wrap">
+    <div class="panel top-panel">
+        <div class="panel-body">
+            <h2 class="summary-title">BC / BC_NB</h2>
+            <p class="summary-text">这一组方法适合新手理解“离线强化学习里最像监督学习”的思路：直接根据数据集中已有的状态和动作来学策略。</p>
+
+            <div class="row control-row">
+                <div class="col-sm-2 control-label">选择算法对</div>
+                <div class="col-sm-5">
+                    <select class="form-control" id="pair-select">
+
+                            <option value="bc" selected>BC / BC_NB</option>
+
+                            <option value="cql" >CQL / CQL_NB</option>
+
+                            <option value="ddpg" >DDPG / DDPG_NB</option>
+
+                            <option value="sac" >SAC / SAC_NB</option>
+
+                            <option value="td3" >TD3 / TD3_NB</option>
+
+                    </select>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="panel section-panel">
+        <div class="panel-body" style="padding-bottom:0;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#tab-beginner" aria-controls="tab-beginner" role="tab" data-toggle="tab">小白先看</a></li>
+                <li role="presentation"><a href="#tab-flow" aria-controls="tab-flow" role="tab" data-toggle="tab">方法流程</a></li>
+                <li role="presentation"><a href="#tab-design" aria-controls="tab-design" role="tab" data-toggle="tab">核心设计</a></li>
+                <li role="presentation"><a href="#tab-params" aria-controls="tab-params" role="tab" data-toggle="tab">参数说明</a></li>
+                <li role="presentation"><a href="#tab-code" aria-controls="tab-code" role="tab" data-toggle="tab">代码块讲解</a></li>
+                <li role="presentation"><a href="#tab-io" aria-controls="tab-io" role="tab" data-toggle="tab">输入输出与产物</a></li>
+                <li role="presentation"><a href="#tab-compare" aria-controls="tab-compare" role="tab" data-toggle="tab">Base / NB 对比</a></li>
+                <li role="presentation"><a href="#tab-conclusion" aria-controls="tab-conclusion" role="tab" data-toggle="tab">小结</a></li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+
+            <div role="tabpanel" class="tab-pane fade in active" id="tab-beginner">
+                <h3 class="section-title">小白先看</h3>
+                <p class="section-lead">先把它理解成“照着老师给的标准答案学动作”。BC 直接学动作，BC_NB 则更重视高质量轨迹里的样本。</p>
+                <div class="row">
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">BC：把状态当输入，把数据集里的动作当标签，训练一个策略网络。</p></div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">BC_NB：在 BC 基础上给样本加权，让高回报轨迹中的样本更重要。</p></div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">适合用来做入门基线，因为训练流程清楚、结果容易解释。</p></div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-flow">
+                <h3 class="section-title">方法流程</h3>
+                <ol class="steps">
+
+                    <li>读取 HDF5 数据集。</li>
+
+                    <li>划分训练集与验证集。</li>
+
+                    <li>根据训练集计算状态标准化参数。</li>
+
+                    <li>构建 MLP 策略网络。</li>
+
+                    <li>执行训练、验证并保存最佳模型。</li>
+
+                    <li>输出日志、评估汇总与曲线图。</li>
+
+                </ol>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-design">
+                <h3 class="section-title">核心设计</h3>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>数据处理</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        可以把 BC 看成“照着老师示范做动作”：网页把每条状态当作题目，把数据集里对应的动作当作标准答案。BC_NB 会额外看看这段轨迹最后表现好不好，好样本会被看得更重。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        BC 主要读取 observations 和 actions；BC_NB 额外读取 rewards 与 terminals，并根据 episode return 构造 sample weights，让高回报轨迹在损失中占更大权重。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>网络结构</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        网络就像一个动作预测器：输入机器人当前姿态和速度等状态信息，输出 6 个动作数值，告诉 HalfCheetah 每个关节大概要怎么发力。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        两者都使用 MLP 策略网络，隐藏层默认 256,256，ReLU 负责非线性表达，输出层经过 tanh 将动作限制在 [-1, 1]，与环境动作范围匹配。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>损失函数</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        训练时就是不断比较“模型给出的动作”和“数据里的动作”差多少。BC_NB 的区别是：来自高回报轨迹的样本，错一点会被罚得更明显。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        BC 使用普通动作回归损失；BC_NB 先计算每个样本自己的 MSE 或 SmoothL1 损失，再乘以 sample weight，最后做加权平均。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>稳定性设计</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        这些设计都是为了让训练别忽上忽下：先把状态数值整理到相近范围，再限制梯度过大，学习率也会慢慢变小。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        两者都包含状态标准化、梯度裁剪、权重衰减和余弦退火学习率；BC 还支持 SmoothL1Loss 与可选 LayerNorm，减少异常样本和尺度差异带来的影响。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-params">
+                <h3 class="section-title">参数说明</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>常用参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+
+                                    <tr><th>data_path</th><td>数据集路径</td></tr>
+
+                                    <tr><th>batch_size</th><td>批大小</td></tr>
+
+                                    <tr><th>lr</th><td>学习率</td></tr>
+
+                                    <tr><th>num_epochs</th><td>训练轮数</td></tr>
+
+                                    <tr><th>hidden_layers</th><td>隐藏层结构</td></tr>
+
+                                    <tr><th>seed</th><td>随机种子</td></tr>
+
+                                    <tr><th>val_ratio</th><td>验证集比例</td></tr>
+
+                                    <tr><th>output_dir</th><td>输出目录</td></tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>进阶参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+
+                                    <tr><th>BC.use_layernorm</th><td>是否使用 LayerNorm</td></tr>
+
+                                    <tr><th>BC.use_smooth_l1</th><td>是否使用 SmoothL1Loss</td></tr>
+
+                                    <tr><th>BC_NB.loss_type</th><td>逐样本损失类型，支持 mse / smooth_l1</td></tr>
+
+                                    <tr><th>BC_NB.weight_temperature</th><td>控制样本权重差异程度</td></tr>
+
+                                    <tr><th>BC_NB.min_weight / max_weight</th><td>限制样本权重上下界</td></tr>
+
+                                    <tr><th>action_clip_eps</th><td>动作截断稳定项</td></tr>
+
+                                </tbody>
+                            </table>
+                            <p class="mini-note">建议先理解常用参数，再看进阶参数。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-code">
+                <h3 class="section-title">代码块讲解</h3>
+
+                <div class="soft-card">
+                    <h4>AIcodes/BC.py -&gt; Config / build_config_from_args</h4>
+                    <p style="margin-bottom:0;">定义训练参数并将配置写入 train_config.json。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/BC.py -&gt; load_dataset</h4>
+                    <p style="margin-bottom:0;">读取 observations/actions，切分训练集与验证集。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/BC.py -&gt; BCPolicy</h4>
+                    <p style="margin-bottom:0;">MLP 策略网络，输出动作。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/BC.py -&gt; train_one_epoch / train_bc</h4>
+                    <p style="margin-bottom:0;">完成训练、验证、最佳模型保存和日志导出。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/BC_NB.py -&gt; build_sample_weights</h4>
+                    <p style="margin-bottom:0;">根据 rewards 与 terminals 计算 episode return，并得到样本权重。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/BC_NB.py -&gt; per_sample_loss</h4>
+                    <p style="margin-bottom:0;">先算逐样本损失，再结合权重进行训练。</p>
+                </div>
+
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-io">
+                <h3 class="section-title">输入输出与产物</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输入</h4>
+                            <ul><li>代码文件：AIcodes/BC.py、AIcodes/BC_NB.py</li><li>数据文件：halfcheetah_medium-v2.hdf5</li><li>命令行参数：学习率、轮数、隐藏层、输出目录等</li></ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输出与产物</h4>
+                            <ul><li>checkpoints/BC/ 或 checkpoints/BC_NB/</li><li>best_model.pt</li><li>train_config.json</li><li>training_log.csv</li><li>evaluation_summary.csv</li><li>train_val_loss.png / train_test_loss.png / lr_curve.png</li></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-compare">
+                <h3 class="section-title">Base / NB 对比</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover compare-table">
+                        <thead>
+                        <tr><th>对比项</th><th>BC</th><th>BC_NB</th></tr>
+                        </thead>
+                        <tbody>
+
+                            <tr><th>核心思路</th><td>普通行为克隆，直接回归动作</td><td>加权行为克隆，优先学习高回报轨迹样本</td></tr>
+
+                            <tr><th>输入字段</th><td>observations, actions</td><td>observations, actions, rewards, terminals</td></tr>
+
+                            <tr><th>损失方式</th><td>普通回归损失</td><td>逐样本损失 × sample weights</td></tr>
+
+                            <tr><th>典型参数</th><td>use_layernorm, use_smooth_l1</td><td>loss_type, weight_temperature, min_weight, max_weight</td></tr>
+
+                            <tr><th>适用理解</th><td>适合作为最基础基线</td><td>适合展示“在基线上做改进”的思路</td></tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-conclusion">
+                <h3 class="section-title">小结</h3>
+                <div class="soft-card">
+
+                        <ul class="conclusion-points">
+
+                                <li>建议先看 BC：它最像监督学习，把状态当输入、把数据集里的动作当标准答案，重点是理解“模仿已有数据”。</li>
+
+                                <li>再看 BC_NB：它在 BC 基础上加入样本权重，让高回报轨迹里的样本更重要，适合理解“好样本应该多学一点”。</li>
+
+                                <li>这一组适合作为离线强化学习入门基线，因为训练流程清楚，结果主要看动作预测误差和训练/验证曲线。</li>
+
+                                <li>如果要做算法对比，可以把 BC 看成基础版本，把 BC_NB 看成“在基础模仿上加入轨迹质量判断”的改进版本。</li>
+
+                        </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    $('#pair-select').on('change', function () {
+        window.location.href = $(this).val() + '.html';
+    });
+})();
+</script>
+</body>
+</html>

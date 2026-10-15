@@ -1,0 +1,24 @@
+{
+  "data_path": "halfcheetah_medium-v2.hdf5",
+  "batch_size": 256,
+  "lr": 0.0003,
+  "num_epochs": 150,
+  "hidden_layers": [
+    256,
+    256
+  ],
+  "output_dir": "checkpoints/BC_NB",
+  "device": "cuda",
+  "seed": 42,
+  "val_ratio": 0.1,
+  "weight_decay": 0.0001,
+  "grad_clip": 5.0,
+  "best_model_name": "best_model.pt",
+  "use_layernorm": false,
+  "loss_type": "smooth_l1",
+  "weight_temperature": 3.0,
+  "min_weight": 0.2,
+  "max_weight": 5.0,
+  "action_clip_eps": 1e-06,
+  "num_workers": 0
+}

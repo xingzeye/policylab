@@ -1,0 +1,26 @@
+# Local credentials, databases and machine configuration
+.env
+.env.*
+!.env.example
+账号密码.txt
+db.sqlite3
+*.sqlite3
+.idea/
+.vscode/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Large source datasets and installers remain available locally
+*.hdf5
+*.h5
+*.whl
+media/datainfo/halfcheetah_dataset.csv
+
+# Local presentation and browser artifacts
+output/
+outputs/
+.playwright-cli/
+staticfiles/
+*.log

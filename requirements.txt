@@ -1,0 +1,7 @@
+pandas
+h5py
+numpy
+Django==2.2.28
+django-simpleui==2022.7.29
+
+##pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu121

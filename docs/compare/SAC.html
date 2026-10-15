@@ -1,0 +1,473 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>实验结果对比分析</title>
+    <link rel="icon" href="../static/policylab/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        body { background: #f5f6f8; font-family: "Microsoft YaHei", Arial, sans-serif; }
+        .page-header { margin-top: 24px; }
+        .summary-card { border-radius: 6px; border: 1px solid #e8e8e8; background: #fff; padding: 16px; margin-bottom: 15px; min-height: 148px; }
+        .summary-card h4 { margin-top: 0; font-size: 18px; }
+        .summary-card p { color: #666; line-height: 1.7; margin-bottom: 8px; }
+        .tip-box { background: #fffbe6; border: 1px solid #faebcc; border-radius: 4px; padding: 15px; margin-bottom: 18px; }
+        .pair-select { max-width: 320px; }
+        .nav-tabs { margin-bottom: 18px; }
+        .panel-chart img { width: 100%; border: 1px solid #eee; background: #fff; }
+        .muted-help { color: #888; font-size: 12px; }
+        .table > thead > tr > th { background: #fafafa; }
+        .file-list li { margin-bottom: 8px; }
+        .status-badge { margin-left: 8px; }
+        .conclusion-box { background: #eef6ff; border: 1px solid #cfe2ff; border-radius: 4px; padding: 15px; margin-bottom: 18px; }
+        .method-col-title { margin-top: 0; margin-bottom: 12px; }
+        .empty-box { color: #999; padding: 18px 10px; text-align: center; border: 1px dashed #ddd; background: #fcfcfc; }
+        .section-note { color: #666; margin-bottom: 12px; }
+        .small-label { color: #999; font-size: 12px; }
+        .top-gap { margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<link rel="stylesheet" href="../static/policylab/nav.css">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="../index.html"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="../learn/index.html">算法轻松学</a>
+        <a href="../modelsinfo/index.html">原理详解</a>
+        <a href="../datainfo/index.html">数据概览</a>
+        <a href="../results/index.html">训练结果</a>
+        <a href="index.html">算法对比</a>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="page-header">
+        <h2>实验结果对比分析 <small>SAC / SAC_NB</small></h2>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <form method="get" class="form-inline">
+                <div class="form-group pair-select">
+                    <label for="pair">选择算法对：</label>
+                    <select id="pair" name="pair" class="form-control" onchange="window.location.href = this.value + '.html'">
+
+                            <option value="BC" >BC / BC_NB</option>
+
+                            <option value="CQL" >CQL / CQL_NB</option>
+
+                            <option value="DDPG" >DDPG / DDPG_NB</option>
+
+                            <option value="SAC" selected>SAC / SAC_NB</option>
+
+                            <option value="TD3" >TD3 / TD3_NB</option>
+
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-8 text-right">
+            <p class="muted-help top-gap">结果目录：<code>.\AIcodes/checkpoints</code></p>
+        </div>
+    </div>
+
+    <div class="tip-box">
+        <strong>小白先看：</strong>
+        这一组除了学动作和 Q 值，还会维护一个熵系数 alpha，用来平衡“多探索一点”和“收益更高”之间的关系。
+        <br>
+        <span class="small-label">这一页先帮你判断“哪边结果更完整、哪边更稳定”，再带你看关键差异。</span>
+    </div>
+
+    <div class="conclusion-box">
+        <strong>一句话结论：</strong> 这一组建议优先看训练是否稳定，再看损失数值；如果出现 NaN，应先把它当异常处理，而不是直接比较大小。
+    </div>
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#overview" role="tab" data-toggle="tab">概览</a></li>
+        <li><a href="#metrics" role="tab" data-toggle="tab">关键指标对比</a></li>
+        <li><a href="#charts" role="tab" data-toggle="tab">核心曲线对比</a></li>
+        <li><a href="#files" role="tab" data-toggle="tab">文件与产物</a></li>
+        <li><a href="#explain" role="tab" data-toggle="tab">怎么看差异</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="overview">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="summary-card">
+                        <h4 class="method-col-title">
+                            SAC
+                            <span class="label label-success status-badge">结果完整</span>
+                        </h4>
+                        <p><strong>类型：</strong>最大熵 Actor-Critic / Base</p>
+                        <p><strong>训练日志：</strong>training_history.csv</p>
+                        <p><strong>模型文件：</strong>已找到</p>
+                        <p><strong>异常情况：</strong><span class="text-success">未发现明显异常</span></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="summary-card">
+                        <h4 class="method-col-title">
+                            SAC_NB
+                            <span class="label label-success status-badge">结果完整</span>
+                        </h4>
+                        <p><strong>类型：</strong>最大熵 Actor-Critic / NB</p>
+                        <p><strong>训练日志：</strong>training_history.csv</p>
+                        <p><strong>模型文件：</strong>已找到</p>
+                        <p><strong>异常情况：</strong><span class="text-success">未发现明显异常</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="tip-box">
+                <strong>这组方法的核心差异：</strong> NB 版在 SAC 损失外加入了 BC 项，通常更容易解释为“在策略优化的同时别偏离数据太多”。
+            </div>
+        </div>
+
+        <div class="tab-pane" id="metrics">
+            <p class="section-note">这里优先展示小白最容易理解的关键指标，不直接把整张 CSV 原样丢给你。</p>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>指标</th>
+                            <th>Base</th>
+                            <th>NB</th>
+                            <th>差值（NB-Base）</th>
+                            <th>简单判断</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td>最终验证 Actor Loss</td>
+                            <td>-47.4342</td>
+                            <td>-87.8412</td>
+                            <td>-40.4070</td>
+                            <td>需结合业务解释</td>
+                        </tr>
+
+                        <tr>
+                            <td>最终验证 Critic1 Loss</td>
+                            <td>986091.32</td>
+                            <td>3.3497</td>
+                            <td>-986087.97</td>
+                            <td>NB 更优</td>
+                        </tr>
+
+                        <tr>
+                            <td>最终验证 Critic2 Loss</td>
+                            <td>1006871.44</td>
+                            <td>3.2937</td>
+                            <td>-1006868.15</td>
+                            <td>NB 更优</td>
+                        </tr>
+
+                        <tr>
+                            <td>最终验证 Alpha</td>
+                            <td>148.4132</td>
+                            <td>0.108365</td>
+                            <td>-148.3048</td>
+                            <td>需结合业务解释</td>
+                        </tr>
+
+                        <tr>
+                            <td>最终验证 BC Loss</td>
+                            <td>-</td>
+                            <td>0.263219</td>
+                            <td>-</td>
+                            <td>—</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="charts">
+            <p class="section-note">只放最重要的几张图，避免一上来就看花眼。</p>
+
+            <div class="panel panel-default panel-chart">
+                <div class="panel-heading"><strong>Actor Loss</strong></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>SAC</h5>
+
+                                <a href="../assets/results/SAC/actor_loss.png" target="_blank">
+                                    <img src="../assets/results/SAC/actor_loss.png" alt="actor_loss.png">
+                                </a>
+                                <p class="muted-help">actor_loss.png</p>
+
+                        </div>
+                        <div class="col-md-6">
+                            <h5>SAC_NB</h5>
+
+                                <a href="../assets/results/SAC_NB/actor_loss.png" target="_blank">
+                                    <img src="../assets/results/SAC_NB/actor_loss.png" alt="actor_loss.png">
+                                </a>
+                                <p class="muted-help">actor_loss.png</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default panel-chart">
+                <div class="panel-heading"><strong>Critic1 Loss</strong></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>SAC</h5>
+
+                                <a href="../assets/results/SAC/critic1_loss.png" target="_blank">
+                                    <img src="../assets/results/SAC/critic1_loss.png" alt="critic1_loss.png">
+                                </a>
+                                <p class="muted-help">critic1_loss.png</p>
+
+                        </div>
+                        <div class="col-md-6">
+                            <h5>SAC_NB</h5>
+
+                                <a href="../assets/results/SAC_NB/critic1_loss.png" target="_blank">
+                                    <img src="../assets/results/SAC_NB/critic1_loss.png" alt="critic1_loss.png">
+                                </a>
+                                <p class="muted-help">critic1_loss.png</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default panel-chart">
+                <div class="panel-heading"><strong>Critic2 Loss</strong></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>SAC</h5>
+
+                                <a href="../assets/results/SAC/critic2_loss.png" target="_blank">
+                                    <img src="../assets/results/SAC/critic2_loss.png" alt="critic2_loss.png">
+                                </a>
+                                <p class="muted-help">critic2_loss.png</p>
+
+                        </div>
+                        <div class="col-md-6">
+                            <h5>SAC_NB</h5>
+
+                                <a href="../assets/results/SAC_NB/critic2_loss.png" target="_blank">
+                                    <img src="../assets/results/SAC_NB/critic2_loss.png" alt="critic2_loss.png">
+                                </a>
+                                <p class="muted-help">critic2_loss.png</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default panel-chart">
+                <div class="panel-heading"><strong>Alpha</strong></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>SAC</h5>
+
+                                <a href="../assets/results/SAC/alpha.png" target="_blank">
+                                    <img src="../assets/results/SAC/alpha.png" alt="alpha.png">
+                                </a>
+                                <p class="muted-help">alpha.png</p>
+
+                        </div>
+                        <div class="col-md-6">
+                            <h5>SAC_NB</h5>
+
+                                <a href="../assets/results/SAC_NB/alpha.png" target="_blank">
+                                    <img src="../assets/results/SAC_NB/alpha.png" alt="alpha.png">
+                                </a>
+                                <p class="muted-help">alpha.png</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="tab-pane" id="files">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><strong>SAC 文件</strong></div>
+                        <div class="panel-body">
+                            <ul class="list-unstyled file-list">
+
+                                <li>
+                                    <a href="../assets/results/SAC/Q1.png" target="_blank">Q1.png</a>
+                                    <span class="text-muted">(28.91 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/Q2.png" target="_blank">Q2.png</a>
+                                    <span class="text-muted">(29.33 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/actor_loss.png" target="_blank">actor_loss.png</a>
+                                    <span class="text-muted">(38.87 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/advantage.png" target="_blank">advantage.png</a>
+                                    <span class="text-muted">(42.32 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/alpha.png" target="_blank">alpha.png</a>
+                                    <span class="text-muted">(22.87 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/best_model.pt" target="_blank">best_model.pt</a>
+                                    <span class="text-muted">(859.53 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/critic1_loss.png" target="_blank">critic1_loss.png</a>
+                                    <span class="text-muted">(38.19 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/critic2_loss.png" target="_blank">critic2_loss.png</a>
+                                    <span class="text-muted">(39.95 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/log_prob_data.png" target="_blank">log_prob_data.png</a>
+                                    <span class="text-muted">(40.96 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/reward.png" target="_blank">reward.png</a>
+                                    <span class="text-muted">(26.89 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/train_config.json" target="_blank">train_config.json</a>
+                                    <span class="text-muted">(697.00 B)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/training_history.csv" target="_blank">training_history.csv</a>
+                                    <span class="text-muted">(66.83 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC/weight.png" target="_blank">weight.png</a>
+                                    <span class="text-muted">(34.99 KB)</span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><strong>SAC_NB 文件</strong></div>
+                        <div class="panel-body">
+                            <ul class="list-unstyled file-list">
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/Q1.png" target="_blank">Q1.png</a>
+                                    <span class="text-muted">(27.02 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/Q2.png" target="_blank">Q2.png</a>
+                                    <span class="text-muted">(27.30 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/actor_loss.png" target="_blank">actor_loss.png</a>
+                                    <span class="text-muted">(32.23 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/alpha.png" target="_blank">alpha.png</a>
+                                    <span class="text-muted">(34.83 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/bc_loss.png" target="_blank">bc_loss.png</a>
+                                    <span class="text-muted">(35.31 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/best_model.pt" target="_blank">best_model.pt</a>
+                                    <span class="text-muted">(859.53 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/critic1_loss.png" target="_blank">critic1_loss.png</a>
+                                    <span class="text-muted">(41.77 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/critic2_loss.png" target="_blank">critic2_loss.png</a>
+                                    <span class="text-muted">(41.99 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/log_prob.png" target="_blank">log_prob.png</a>
+                                    <span class="text-muted">(31.40 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/reward.png" target="_blank">reward.png</a>
+                                    <span class="text-muted">(26.20 KB)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/train_config.json" target="_blank">train_config.json</a>
+                                    <span class="text-muted">(672.00 B)</span>
+                                </li>
+
+                                <li>
+                                    <a href="../assets/results/SAC_NB/training_history.csv" target="_blank">training_history.csv</a>
+                                    <span class="text-muted">(53.15 KB)</span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="explain">
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>怎么看这页</strong></div>
+                <div class="panel-body">
+                    <ol>
+                        <li>先看顶部状态：结果完整、结果异常、结果不完整，先判断“能不能用”。</li>
+                        <li>再看关键指标：不是所有数字都需要看，先看表格里最上面的 2 到 4 个指标。</li>
+                        <li>最后看核心曲线：如果曲线波动很大、或者出现 NaN，说明训练稳定性存在问题。</li>
+                    </ol>
+                    <hr>
+                    <p><strong>小白建议：</strong></p>
+                    <ul>
+                        <li>如果一边出现 NaN，先把它当异常结果，而不是继续和另一边比大小。</li>
+                        <li>如果两边都正常，再看“最终损失/误差”和“曲线是否更平稳”。</li>
+                        <li>NB 版不一定所有指标都更好，但通常会多一个改进项，适合解释“改进来自哪里”。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

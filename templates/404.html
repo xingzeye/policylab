@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 迷失在强化学习的维度</title>
+    <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="/static/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        :root {--primary-color: #4361ee;--secondary-color: #3f37c9;--text-color: #2b2d42;--bg-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);}
+        body {background: var(--bg-gradient);height: 100vh;margin: 0;display: flex;align-items: center;justify-content: center;font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;overflow: hidden;}
+        .error-wrapper {text-align: center;position: relative;z-index: 1;padding: 40px;background: rgba(255, 255, 255, 0.7);backdrop-filter: blur(10px);border-radius: 30px;box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);max-width: 500px;width: 90%;border: 1px solid rgba(255, 255, 255, 0.3);animation: fadeIn 1s ease-out;}
+        .error-code {font-size: 150px;font-weight: 900;line-height: 1;margin-bottom: 20px;background: linear-gradient(to right, #4361ee, #4cc9f0);-webkit-background-clip: text;-webkit-text-fill-color: transparent;position: relative;display: inline-block;animation: float 4s ease-in-out infinite;}
+        .error-code::after {content: "404";position: absolute;left: 2px;top: 2px;z-index: -1;background: linear-gradient(to right, #f72585, #7209b7);-webkit-background-clip: text;-webkit-text-fill-color: transparent;opacity: 0.3;filter: blur(8px);}
+        .error-message {font-size: 24px;color: var(--text-color);margin-bottom: 10px;font-weight: 600;}
+        .error-description {color: #6c757d;margin-bottom: 30px;line-height: 1.6;}
+        .btn-home {background: var(--primary-color);border: none;padding: 12px 35px;border-radius: 50px;font-weight: 600;color: white;transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);text-decoration: none;display: inline-block;box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);}
+        .btn-home:hover {transform: translateY(-5px) scale(1.05);box-shadow: 0 15px 30px rgba(67, 97, 238, 0.4);color: white;background: var(--secondary-color);}
+        /* 装饰性背景球 */
+        .shape {position: absolute;border-radius: 50%;filter: blur(60px);z-index: 0;opacity: 0.5;animation: move 20s infinite alternate;}
+        .shape-1 {width: 300px;height: 300px;background: #4361ee;top: -100px;right: -50px;}
+        .shape-2 {width: 250px;height: 250px;background: #f72585;bottom: -50px;left: -50px;animation-delay: -5s;  }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes move {
+            from { transform: translate(0, 0); }
+            to { transform: translate(50px, 50px); }
+        }
+        /* 响应式调整 */
+        @media (max-width: 576px) {
+            .error-code { font-size: 100px; }
+            .error-message { font-size: 20px; }
+            .error-wrapper { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+
+    <div class="error-wrapper">
+        <div class="error-code">404</div>
+        <div class="error-message">检测到“未定义”状态</div>
+        <p class="error-description">
+            智能体在此维度迷失了方向。<br>
+            您访问的路径不存在或已被优化。
+        </p>
+        <a href="/admin/" class="btn-home">
+            <i class="glyphicon glyphicon-home"></i> 返回管理后台
+        </a>
+    </div>
+
+
+</body>
+</html>

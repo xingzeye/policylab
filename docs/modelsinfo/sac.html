@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>算法介绍</title>
+    <link rel="icon" href="../static/policylab/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        body { background: #f6f7fb; font-family: "Microsoft YaHei", Arial, sans-serif; color: #333; }
+        .page-wrap { padding: 24px 0 36px; }
+        .top-panel, .section-panel { border: 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+        .top-panel .panel-body { padding: 22px 24px; }
+        .summary-title { margin: 0 0 10px; font-size: 24px; font-weight: 700; }
+        .summary-text { color: #666; line-height: 1.85; margin-bottom: 0; }
+        .control-row { margin-top: 16px; }
+        .control-label { padding-top: 8px; font-weight: 700; }
+        .nav-tabs { border-bottom: 1px solid #ddd; }
+        .nav-tabs > li > a { color: #555; font-weight: 700; }
+        .nav-tabs > li.active > a,
+        .nav-tabs > li.active > a:hover,
+        .nav-tabs > li.active > a:focus { color: #337ab7; }
+        .tab-content { background: #fff; border: 1px solid #ddd; border-top: 0; padding: 22px; border-radius: 0 0 8px 8px; }
+        .section-title { margin: 0 0 14px; font-size: 22px; font-weight: 700; }
+        .section-lead { color: #666; line-height: 1.9; margin-bottom: 18px; }
+        .soft-card { background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
+        .soft-card h4 { margin-top: 0; margin-bottom: 10px; font-size: 16px; font-weight: 700; }
+        .soft-card p, .soft-card li { color: #666; line-height: 1.8; }
+        .design-layer { margin-bottom: 10px; }
+        .design-layer:last-child { margin-bottom: 0; }
+        .design-label { display: inline-block; margin-bottom: 4px; font-weight: 700; color: #337ab7; }
+        .design-label.tech { color: #555; }
+        .steps { counter-reset: item; list-style: none; padding-left: 0; }
+        .steps li { position: relative; padding: 12px 12px 12px 50px; margin-bottom: 12px; background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; }
+        .steps li:before { counter-increment: item; content: counter(item); position: absolute; left: 15px; top: 10px; width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; background: #337ab7; color: #fff; font-weight: 700; }
+        .kv-table th { width: 220px; background: #fafafa; }
+        .mini-note { color: #888; margin-top: 8px; }
+        .compare-table th { white-space: nowrap; }
+        .bottom-text { color: #666; line-height: 1.9; }
+        .conclusion-points { margin: 0; padding-left: 20px; color: #666; line-height: 1.9; }
+        .conclusion-points li { margin-bottom: 8px; }
+        .conclusion-points li:last-child { margin-bottom: 0; }
+        .pair-hint { margin-top: 10px; color: #888; }
+        @media (max-width: 767px) {
+            .summary-title { font-size: 20px; }
+            .control-label { padding-top: 0; margin-bottom: 8px; }
+            .tab-content { padding: 16px; }
+            .kv-table th { width: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+<link rel="stylesheet" href="../static/policylab/nav.css">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="../index.html"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="../learn/index.html">算法轻松学</a>
+        <a href="index.html">原理详解</a>
+        <a href="../datainfo/index.html">数据概览</a>
+        <a href="../results/index.html">训练结果</a>
+        <a href="../compare/index.html">算法对比</a>
+    </div>
+</nav>
+
+<div class="container page-wrap">
+    <div class="panel top-panel">
+        <div class="panel-body">
+            <h2 class="summary-title">SAC / SAC_NB</h2>
+            <p class="summary-text">这一组方法体现了“最大熵 actor-critic”在离线强化学习中的工程化实现：既看收益，也保留一定随机性。</p>
+
+            <div class="row control-row">
+                <div class="col-sm-2 control-label">选择算法对</div>
+                <div class="col-sm-5">
+                    <select class="form-control" id="pair-select">
+
+                            <option value="bc" >BC / BC_NB</option>
+
+                            <option value="cql" >CQL / CQL_NB</option>
+
+                            <option value="ddpg" >DDPG / DDPG_NB</option>
+
+                            <option value="sac" selected>SAC / SAC_NB</option>
+
+                            <option value="td3" >TD3 / TD3_NB</option>
+
+                    </select>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="panel section-panel">
+        <div class="panel-body" style="padding-bottom:0;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#tab-beginner" aria-controls="tab-beginner" role="tab" data-toggle="tab">小白先看</a></li>
+                <li role="presentation"><a href="#tab-flow" aria-controls="tab-flow" role="tab" data-toggle="tab">方法流程</a></li>
+                <li role="presentation"><a href="#tab-design" aria-controls="tab-design" role="tab" data-toggle="tab">核心设计</a></li>
+                <li role="presentation"><a href="#tab-params" aria-controls="tab-params" role="tab" data-toggle="tab">参数说明</a></li>
+                <li role="presentation"><a href="#tab-code" aria-controls="tab-code" role="tab" data-toggle="tab">代码块讲解</a></li>
+                <li role="presentation"><a href="#tab-io" aria-controls="tab-io" role="tab" data-toggle="tab">输入输出与产物</a></li>
+                <li role="presentation"><a href="#tab-compare" aria-controls="tab-compare" role="tab" data-toggle="tab">Base / NB 对比</a></li>
+                <li role="presentation"><a href="#tab-conclusion" aria-controls="tab-conclusion" role="tab" data-toggle="tab">小结</a></li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+
+            <div role="tabpanel" class="tab-pane fade in active" id="tab-beginner">
+                <h3 class="section-title">小白先看</h3>
+                <p class="section-lead">可以把 SAC 理解成“既想学到高收益动作，也不想太死板”。SAC_NB 则在这个基础上再加一层行为克隆约束。</p>
+                <div class="row">
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">SAC：当前脚本实现更接近 AWAC-SAC，即 actor 更新里带有 advantage-weighted 思路。</p></div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">SAC_NB：当前脚本实现更接近 SAC + BC。</p></div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">这组方法适合展示随机策略网络和 alpha 自动调节。</p></div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-flow">
+                <h3 class="section-title">方法流程</h3>
+                <ol class="steps">
+
+                    <li>读取完整 transition 数据。</li>
+
+                    <li>划分训练集与验证集。</li>
+
+                    <li>计算状态标准化和 reward 统计量。</li>
+
+                    <li>构建 Gaussian actor、双 critic 与 target critics。</li>
+
+                    <li>更新 critic、actor 和 alpha。</li>
+
+                    <li>保存训练历史和模型。</li>
+
+                </ol>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-design">
+                <h3 class="section-title">核心设计</h3>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>随机策略网络</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        SAC 不会只给一个死板动作，而是给出一类可能动作，再从里面采样。这样策略既能追求高收益，也能保留一点灵活性。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        两者都使用 GaussianActor，网络输出 mu 与 log_std，通过重参数采样得到动作，并用 tanh 将动作压到合法范围。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>Base 版本增强</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        Base 版会更愿意学习那些“看起来比当前策略更好”的数据动作，相当于从离线数据里挑更值得模仿的经验。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        SAC.py 的 actor 更新采用 AWAC 风格，根据 data_q 与 v_pi 的差值计算 advantage 权重，再对数据动作的 log_prob 做加权优化。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>NB 版本增强</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        NB 版除了 SAC 自己的策略优化，还加了一条“别偏离数据动作太远”的约束，适合离线场景里减少乱试动作。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        SAC_NB.py 的 actor 更新采用 sac_loss + bc_loss：前者提升策略价值并考虑熵项，后者用行为克隆约束策略靠近数据集动作。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>温度参数</h4>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        alpha 可以理解成“探索和收益的平衡旋钮”：alpha 大时策略更随机，alpha 小时策略更专注于当前认为好的动作。
+                                    </p>
+
+
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        两者都支持 alpha_init 与 learn_alpha，通过目标熵自动调整 alpha，使策略随机性和 Q 值优化保持平衡。
+                                    </p>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-params">
+                <h3 class="section-title">参数说明</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>常用参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+
+                                    <tr><th>data_path / save_dir</th><td>数据路径与输出目录</td></tr>
+
+                                    <tr><th>hidden_sizes</th><td>隐藏层结构</td></tr>
+
+                                    <tr><th>lr_actor / lr_critic / lr_alpha</th><td>学习率</td></tr>
+
+                                    <tr><th>batch_size / num_epochs</th><td>训练规模</td></tr>
+
+                                    <tr><th>gamma / tau</th><td>折扣与软更新</td></tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>进阶参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+
+                                    <tr><th>alpha_init / learn_alpha</th><td>温度参数及是否学习</td></tr>
+
+                                    <tr><th>log_std_min / log_std_max</th><td>策略方差范围</td></tr>
+
+                                    <tr><th>SAC.awac_lambda / weight_clip</th><td>AWAC 权重相关参数</td></tr>
+
+                                    <tr><th>SAC_NB.bc_coef</th><td>行为克隆约束系数</td></tr>
+
+                                    <tr><th>reward_scale</th><td>reward 标准化开关</td></tr>
+
+                                </tbody>
+                            </table>
+                            <p class="mini-note">建议先理解常用参数，再看进阶参数。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-code">
+                <h3 class="section-title">代码块讲解</h3>
+
+                <div class="soft-card">
+                    <h4>AIcodes/SAC.py -&gt; GaussianActor</h4>
+                    <p style="margin-bottom:0;">实现随机策略，输出动作和对数概率。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/SAC.py -&gt; OfflineAWACSACAgent</h4>
+                    <p style="margin-bottom:0;">Base 版本的核心 agent，带 AWAC 风格 actor 更新。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/SAC_NB.py -&gt; OfflineSACAgent</h4>
+                    <p style="margin-bottom:0;">NB 版本的核心 agent，actor 更新为 sac_loss + bc_loss。</p>
+                </div>
+
+                <div class="soft-card">
+                    <h4>AIcodes/SAC.py / SAC_NB.py -&gt; alpha 更新</h4>
+                    <p style="margin-bottom:0;">自动调节温度参数 alpha。</p>
+                </div>
+
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-io">
+                <h3 class="section-title">输入输出与产物</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输入</h4>
+                            <ul><li>代码文件：AIcodes/SAC.py、AIcodes/SAC_NB.py</li><li>数据文件：halfcheetah_medium-v2.hdf5</li><li>完整 transition 数据</li></ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输出与产物</h4>
+                            <ul><li>checkpoints/SAC/ 或 checkpoints/SAC_NB/</li><li>best_model.pt</li><li>train_config.json</li><li>training_history.csv</li><li>训练曲线图</li></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-compare">
+                <h3 class="section-title">Base / NB 对比</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover compare-table">
+                        <thead>
+                        <tr><th>对比项</th><th>SAC</th><th>SAC_NB</th></tr>
+                        </thead>
+                        <tbody>
+
+                            <tr><th>actor 更新方式</th><td>AWAC 风格加权 log_prob 学习</td><td>SAC loss + BC loss</td></tr>
+
+                            <tr><th>增强重点</th><td>根据 advantage 调整学习权重</td><td>直接加入行为克隆约束</td></tr>
+
+                            <tr><th>共同特征</th><td>Gaussian actor、双 critic、alpha 自动调节</td><td>Gaussian actor、双 critic、alpha 自动调节</td></tr>
+
+                            <tr><th>适合理解</th><td>理解离线随机策略如何加权学习</td><td>理解随机策略如何加入 BC 约束</td></tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-conclusion">
+                <h3 class="section-title">小结</h3>
+                <div class="soft-card">
+
+                        <ul class="conclusion-points">
+
+                                <li>SAC 可以理解成“既追求高收益，也保留一定随机性”：它不会只输出一个固定动作，而是从一个动作分布中采样。</li>
+
+                                <li>双 critic 用来降低 Q 值高估，alpha 温度参数像一个旋钮，用来平衡“多探索一点”和“更贪心一点”。</li>
+
+                                <li>SAC 的 Base 版本更偏 AWAC 风格，会更重视 advantage 更高的数据动作；SAC_NB 则额外加入 BC loss，强调不要偏离离线数据动作。</li>
+
+                                <li>这一组适合理解随机策略在离线场景里的难点：既要学到高收益动作，也要避免策略跑到数据集没有覆盖的地方。</li>
+
+                        </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    $('#pair-select').on('change', function () {
+        window.location.href = $(this).val() + '.html';
+    });
+})();
+</script>
+</body>
+</html>

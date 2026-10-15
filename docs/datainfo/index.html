@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>数据集介绍</title>
+    <link rel="icon" href="../static/policylab/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            background: #f3f5f7;
+            font-family: "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #333;
+        }
+        .page-wrap {
+            max-width: 1480px;
+            margin: 0 auto;
+            padding: 24px 16px 40px;
+        }
+        .stats-wrap {
+            margin-bottom: 18px;
+        }
+        .summary-card {
+            border: 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .05);
+            overflow: hidden;
+            margin-bottom: 18px;
+            background: #fff;
+        }
+        .summary-card .panel-body {
+            padding: 18px 18px 16px;
+        }
+        .summary-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        .summary-value {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 6px;
+        }
+        .summary-desc {
+            color: #888;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .main-tabs-wrap {
+            background: #fff;
+            border: 1px solid #e8edf2;
+            border-radius: 10px;
+            box-shadow: 0 3px 14px rgba(0, 0, 0, .04);
+            overflow: hidden;
+        }
+        .main-tabs {
+            background: #fafbfd;
+            padding: 0 12px;
+            border-bottom: 1px solid #e8edf2;
+        }
+        .main-tabs > li > a {
+            border: 0 !important;
+            border-radius: 0;
+            color: #555;
+            padding: 15px 18px;
+            font-weight: 600;
+        }
+        .main-tabs > li.active > a,
+        .main-tabs > li.active > a:focus,
+        .main-tabs > li.active > a:hover {
+            background: #fff;
+            color: #337ab7;
+            border-bottom: 2px solid #337ab7 !important;
+        }
+        .tab-pane-inner {
+            padding: 20px;
+        }
+        .section-desc {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+        .info-panel,
+        .soft-panel,
+        .chart-card {
+            border: 1px solid #e8edf2;
+            border-radius: 8px;
+            box-shadow: none;
+            margin-bottom: 18px;
+            background: #fff;
+        }
+        .info-panel .panel-heading,
+        .soft-panel .panel-heading,
+        .chart-card .panel-heading {
+            background: #fcfdff;
+            border-bottom: 1px solid #edf1f5;
+            font-weight: 600;
+            padding: 12px 15px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .meta-table th,
+        .struct-table th,
+        .group-table th,
+        .algo-table th {
+            background: #fafafa;
+            white-space: nowrap;
+        }
+        .meta-table th {
+            width: 150px;
+        }
+        .meta-table td,
+        .struct-table td,
+        .group-table td,
+        .algo-table td {
+            vertical-align: middle !important;
+        }
+        .list-group-item small {
+            color: #888;
+        }
+        .preview-table-wrap {
+            max-height: 460px;
+            overflow: auto;
+            border: 1px solid #edf1f5;
+            border-radius: 6px;
+        }
+        .preview-toolbar {
+            margin-bottom: 12px;
+        }
+        .preview-toolbar .label {
+            margin-right: 6px;
+            padding: 5px 8px;
+        }
+        .thumb-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -9px;
+            margin-right: -9px;
+        }
+        .thumb-col {
+            padding-left: 9px;
+            padding-right: 9px;
+            margin-bottom: 18px;
+            display: flex;
+        }
+        .chart-card {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 0;
+        }
+        .chart-card .panel-body {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .chart-thumb-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 6px;
+            background: #f8f8f8;
+            border: 1px solid #edf1f5;
+            cursor: zoom-in;
+            height: 230px;
+        }
+        .chart-thumb-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            transition: transform .25s ease;
+        }
+        .chart-thumb-wrap:hover img {
+            transform: scale(1.02);
+        }
+        .chart-meta {
+            margin-top: 10px;
+            color: #666;
+            line-height: 1.8;
+            min-height: 82px;
+        }
+        .chart-actions {
+            margin-top: auto;
+        }
+        .chart-actions .btn {
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        .file-path-box {
+            padding: 10px 12px;
+            background: #f8fafc;
+            border: 1px dashed #d9e2ec;
+            border-radius: 6px;
+            color: #666;
+            word-break: break-all;
+        }
+        .empty-state {
+            padding: 30px 20px;
+            text-align: center;
+            color: #888;
+        }
+        .table-note {
+            color: #888;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .modal-chart-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .chart-modal .modal-dialog {
+            width: 92%;
+            max-width: 1400px;
+            margin: 24px auto;
+        }
+        .chart-modal .modal-content {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .chart-modal .modal-body {
+            background: #111;
+            text-align: center;
+            padding: 14px;
+        }
+        .chart-modal img {
+            max-width: 100%;
+            max-height: 78vh;
+            border-radius: 4px;
+            background: #fff;
+        }
+        .back-top {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 99;
+            display: none;
+            border-radius: 50px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.15);
+        }
+        @media (max-width: 991px) {
+            .thumb-grid {
+                display: block;
+                margin-left: -15px;
+                margin-right: -15px;
+            }
+            .thumb-col {
+                display: block;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            .chart-thumb-wrap {
+                height: 210px;
+            }
+            .chart-modal .modal-dialog {
+                width: 96%;
+                margin: 12px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<link rel="stylesheet" href="../static/policylab/nav.css">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="../index.html"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="../learn/index.html">算法轻松学</a>
+        <a href="../modelsinfo/index.html">原理详解</a>
+        <a href="index.html">数据概览</a>
+        <a href="../results/index.html">训练结果</a>
+        <a href="../compare/index.html">算法对比</a>
+    </div>
+</nav>
+
+<div class="container-fluid page-wrap">
+    <div class="row stats-wrap">
+        <div class="col-md-3 col-sm-6">
+            <div class="panel summary-card">
+                <div class="panel-body">
+                    <div class="summary-label">状态信息个数</div>
+                    <div class="summary-value">17</div>
+                    <div class="summary-desc">每条数据里，用来描述当前状态的数字个数</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="panel summary-card">
+                <div class="panel-body">
+                    <div class="summary-label">动作信息个数</div>
+                    <div class="summary-value">6</div>
+                    <div class="summary-desc">每条数据里，动作由几个数字组成</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="panel summary-card">
+                <div class="panel-body">
+                    <div class="summary-label">表格总列数</div>
+                    <div class="summary-value">25</div>
+                    <div class="summary-desc">状态 + 动作 + 奖励 + 结束标记</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="panel summary-card">
+                <div class="panel-body">
+                    <div class="summary-label">表格总行数</div>
+                    <div class="summary-value">
+
+                            1000000
+
+                    </div>
+                    <div class="summary-desc">当前 CSV 文件里的数据条数</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <div class="alert alert-info">当前展示已保存的数据快照：总行数来自完整 CSV，表格及下载文件仅包含前 8 条样本。完整数据集请在本地使用。</div>
+
+
+
+    <div class="main-tabs-wrap">
+        <ul class="nav nav-tabs main-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#tab-overview" aria-controls="tab-overview" role="tab" data-toggle="tab">数据集概览</a>
+            </li>
+            <li role="presentation">
+                <a href="#tab-structure" aria-controls="tab-structure" role="tab" data-toggle="tab">数据内容说明</a>
+            </li>
+            <li role="presentation">
+                <a href="#tab-charts" aria-controls="tab-charts" role="tab" data-toggle="tab">数据可视化</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="tab-overview">
+                <div class="tab-pane-inner">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="panel info-panel">
+                                <div class="panel-heading">基础信息</div>
+                                <div class="panel-body">
+                                    <p class="section-desc">该页面用于展示 halfcheetah_medium-v2.hdf5 的基础信息、字段结构、CSV 预览及数据分布图。页面默认读取 media/datainfo 下的分析产物。</p>
+                                    <table class="table table-bordered meta-table" style="margin-bottom: 0;">
+                                        <tbody>
+                                            <tr>
+                                                <th>数据集文件名</th>
+                                                <td>halfcheetah_medium-v2.hdf5</td>
+                                            </tr>
+                                            <tr>
+                                                <th>数据集场景</th>
+                                                <td>halfcheetah-medium-v2</td>
+                                            </tr>
+                                            <tr>
+                                                <th>数据类型</th>
+                                                <td>离线强化学习数据集</td>
+                                            </tr>
+                                            <tr>
+                                                <th>状态信息个数</th>
+                                                <td>17</td>
+                                            </tr>
+                                            <tr>
+                                                <th>动作信息个数</th>
+                                                <td>6</td>
+                                            </tr>
+                                            <tr>
+                                                <th>表格总列数</th>
+                                                <td>25</td>
+                                            </tr>
+                                            <tr>
+                                                <th>表格总行数</th>
+                                                <td>
+
+                                                        1000000
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>文件存放位置</th>
+                                                <td><div class="file-path-box">.\media\datainfo</div></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="panel soft-panel">
+                                <div class="panel-heading">已准备好的文件</div>
+                                <div class="panel-body">
+                                    <div class="list-group" style="margin-bottom: 14px;">
+                                        <div class="list-group-item">
+                                            <h5 class="list-group-item-heading" style="margin-top: 0;">CSV 表格文件</h5>
+                                            <p class="list-group-item-text">
+                                                halfcheetah_preview.csv
+                                                <br><small>大小：2.29 KB</small>
+                                            </p>
+                                            <div style="margin-top: 10px;">
+
+                                                    <a href="../media/datainfo/halfcheetah_preview.csv" target="_blank" class="btn btn-primary btn-sm">
+                                                        <span aria-hidden="true">⬇</span> 下载 8 条样本 CSV
+                                                    </a>
+
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item">
+                                            <h5 class="list-group-item-heading" style="margin-top: 0;">分析图片</h5>
+                                            <p class="list-group-item-text">
+                                                observations_subplots.png<br>
+                                                actions_subplots.png<br>
+                                                reward_terminal_subplots.png
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info" style="margin-bottom: 0;">
+                                        点击图片可以放大查看；点空白处或按 ESC 可以关闭大图。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel soft-panel" style="margin-bottom: 0;">
+                        <div class="panel-heading">CSV 内容预览</div>
+                        <div class="panel-body">
+                            <div class="preview-toolbar">
+                                <span class="label label-default">只显示前 8 行</span>
+                                <span class="label label-info">可左右滚动查看</span>
+                            </div>
+
+                                <div class="preview-table-wrap">
+                                    <table class="table table-bordered table-striped table-hover table-condensed" style="margin-bottom: 0;">
+                                        <thead>
+                                            <tr>
+
+                                                    <th>obs_0</th>
+
+                                                    <th>obs_1</th>
+
+                                                    <th>obs_2</th>
+
+                                                    <th>obs_3</th>
+
+                                                    <th>obs_4</th>
+
+                                                    <th>obs_5</th>
+
+                                                    <th>obs_6</th>
+
+                                                    <th>obs_7</th>
+
+                                                    <th>obs_8</th>
+
+                                                    <th>obs_9</th>
+
+                                                    <th>obs_10</th>
+
+                                                    <th>obs_11</th>
+
+                                                    <th>obs_12</th>
+
+                                                    <th>obs_13</th>
+
+                                                    <th>obs_14</th>
+
+                                                    <th>obs_15</th>
+
+                                                    <th>obs_16</th>
+
+                                                    <th>act_0</th>
+
+                                                    <th>act_1</th>
+
+                                                    <th>act_2</th>
+
+                                                    <th>act_3</th>
+
+                                                    <th>act_4</th>
+
+                                                    <th>act_5</th>
+
+                                                    <th>reward</th>
+
+                                                    <th>terminal</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                                <tr>
+
+                                                        <td>0.019831914</td>
+
+                                                        <td>-0.089501314</td>
+
+                                                        <td>-0.0031969063</td>
+
+                                                        <td>-0.036015816</td>
+
+                                                        <td>0.066198416</td>
+
+                                                        <td>-0.09322933</td>
+
+                                                        <td>0.060390532</td>
+
+                                                        <td>-0.08753889</td>
+
+                                                        <td>-0.018776078</td>
+
+                                                        <td>-0.16759904</td>
+
+                                                        <td>-0.07047922</td>
+
+                                                        <td>0.07015167</td>
+
+                                                        <td>0.0302026</td>
+
+                                                        <td>0.055026464</td>
+
+                                                        <td>0.11365079</td>
+
+                                                        <td>0.06842492</td>
+
+                                                        <td>-0.13811582</td>
+
+                                                        <td>-0.22293739</td>
+
+                                                        <td>-0.7359478</td>
+
+                                                        <td>-0.8599511</td>
+
+                                                        <td>0.29579234</td>
+
+                                                        <td>-0.8416547</td>
+
+                                                        <td>0.43432042</td>
+
+                                                        <td>-0.20008013</td>
+
+                                                        <td>0.0</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                        <td>-0.0038486063</td>
+
+                                                        <td>-0.05239432</td>
+
+                                                        <td>0.008305033</td>
+
+                                                        <td>-0.25620908</td>
+
+                                                        <td>-0.29927862</td>
+
+                                                        <td>0.09239996</td>
+
+                                                        <td>-0.33266103</td>
+
+                                                        <td>0.08740087</td>
+
+                                                        <td>-0.019692373</td>
+
+                                                        <td>-0.7215125</td>
+
+                                                        <td>0.9559706</td>
+
+                                                        <td>-0.53302956</td>
+
+                                                        <td>-5.454581</td>
+
+                                                        <td>-8.709041</td>
+
+                                                        <td>4.5068407</td>
+
+                                                        <td>-9.288557</td>
+
+                                                        <td>4.7328596</td>
+
+                                                        <td>-0.72515714</td>
+
+                                                        <td>-0.9237766</td>
+
+                                                        <td>-0.9887563</td>
+
+                                                        <td>-0.5074778</td>
+
+                                                        <td>-0.931533</td>
+
+                                                        <td>0.9786059</td>
+
+                                                        <td>-1.1981525</td>
+
+                                                        <td>0.0</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                        <td>-0.055298433</td>
+
+                                                        <td>-7.7850236e-05</td>
+
+                                                        <td>-0.23952831</td>
+
+                                                        <td>-0.47309932</td>
+
+                                                        <td>-0.43302038</td>
+
+                                                        <td>-0.08347724</td>
+
+                                                        <td>-0.5564768</td>
+
+                                                        <td>0.46180025</td>
+
+                                                        <td>-1.0190138</td>
+
+                                                        <td>-1.2830418</td>
+
+                                                        <td>0.8685812</td>
+
+                                                        <td>-6.456269</td>
+
+                                                        <td>-3.183431</td>
+
+                                                        <td>0.9349661</td>
+
+                                                        <td>-7.0811687</td>
+
+                                                        <td>-1.4037068</td>
+
+                                                        <td>7.552405</td>
+
+                                                        <td>0.85085297</td>
+
+                                                        <td>0.4005884</td>
+
+                                                        <td>-0.9951021</td>
+
+                                                        <td>-0.9082174</td>
+
+                                                        <td>-0.9951816</td>
+
+                                                        <td>0.74173075</td>
+
+                                                        <td>-0.69075197</td>
+
+                                                        <td>0.0</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                        <td>-0.12996776</td>
+
+                                                        <td>0.0022959358</td>
+
+                                                        <td>-0.22985412</td>
+
+                                                        <td>-0.24506849</td>
+
+                                                        <td>-0.421798</td>
+
+                                                        <td>-0.47994965</td>
+
+                                                        <td>-0.4462107</td>
+
+                                                        <td>0.49182144</td>
+
+                                                        <td>0.2714049</td>
+
+                                                        <td>-1.6106585</td>
+
+                                                        <td>-0.24517862</td>
+
+                                                        <td>5.022523</td>
+
+                                                        <td>7.442182</td>
+
+                                                        <td>0.0015885988</td>
+
+                                                        <td>-7.01441</td>
+
+                                                        <td>2.6917322</td>
+
+                                                        <td>-1.6729002</td>
+
+                                                        <td>0.97592026</td>
+
+                                                        <td>-0.34606597</td>
+
+                                                        <td>0.94268423</td>
+
+                                                        <td>-0.9707508</td>
+
+                                                        <td>-0.8918655</td>
+
+                                                        <td>-0.89223915</td>
+
+                                                        <td>0.2682023</td>
+
+                                                        <td>0.0</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                        <td>-0.13211937</td>
+
+                                                        <td>0.12825453</td>
+
+                                                        <td>-0.11419714</td>
+
+                                                        <td>-0.4127173</td>
+
+                                                        <td>-0.35555848</td>
+
+                                                        <td>-0.76192</td>
+
+                                                        <td>-0.3654395</td>
+
+                                                        <td>-0.08646963</td>
+
+                                                        <td>1.2587897</td>
+
+                                                        <td>0.44644415</td>
+
+                                                        <td>3.087174</td>
+
+                                                        <td>3.737456</td>
+
+                                                        <td>-4.799259</td>
+
+                                                        <td>4.942616</td>
+
+                                                        <td>-3.0053906</td>
+
+                                                        <td>0.1782225</td>
+
+                                                        <td>-15.0525875</td>
+
+                                                        <td>-0.8421573</td>
+
+                                                        <td>-0.6359735</td>
+
+                                                        <td>-0.98595387</td>
+
+                                                        <td>0.21170099</td>
+
+                                                        <td>0.77783215</td>
+
+                                                        <td>0.36130708</td>
+
+                                                        <td>1.1128312</td>
+
+                                                        <td>0.0</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                        <td>-0.12636696</td>
+
+                                                        <td>0.16199937</td>
+
+                                                        <td>-0.13743004</td>
+
+                                                        <td>-0.26031467</td>
+
+                                                        <td>-0.36381644</td>
+
+                                                        <td>-0.41579533</td>
+
+                                                        <td>-0.000111933085</td>
+
+                                                        <td>-0.4257694</td>
+
+                                                        <td>1.5003949</td>
+
+                                                        <td>-0.14606176</td>
+
+                                                        <td>-0.05747528</td>
+
+                                                        <td>-2.2757354</td>
+
+                                                        <td>4.9753094</td>
+
+                                                        <td>-2.307276</td>
+
+                                                        <td>10.427772</td>
+
+                                                        <td>10.509973</td>
+
+                                                        <td>-0.29150343</td>
+
+                                                        <td>-0.9655438</td>
+
+                                                        <td>-0.99945205</td>
+
+                                                        <td>-0.9728637</td>
+
+                                                        <td>0.96620613</td>
+
+                                                        <td>0.7012421</td>
+
+                                                        <td>0.2593249</td>
+
+                                                        <td>0.90088403</td>
+
+                                                        <td>0.0</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                        <td>-0.12975472</td>
+
+                                                        <td>0.08826717</td>
+
+                                                        <td>-0.2799968</td>
+
+                                                        <td>-0.2532647</td>
+
+                                                        <td>-0.42116532</td>
+
+                                                        <td>0.14782758</td>
+
+                                                        <td>-0.16478486</td>
+
+                                                        <td>-0.5021658</td>
+
+                                                        <td>1.3136882</td>
+
+                                                        <td>-0.105411336</td>
+
+                                                        <td>-2.0056245</td>
+
+                                                        <td>-3.0112424</td>
+
+                                                        <td>-2.9570563</td>
+
+                                                        <td>0.44427294</td>
+
+                                                        <td>12.490645</td>
+
+                                                        <td>-2.4686544</td>
+
+                                                        <td>2.449348</td>
+
+                                                        <td>-0.9959171</td>
+
+                                                        <td>-0.9829619</td>
+
+                                                        <td>-0.9607513</td>
+
+                                                        <td>0.5340196</td>
+
+                                                        <td>-0.523801</td>
+
+                                                        <td>0.72127736</td>
+
+                                                        <td>0.6158797</td>
+
+                                                        <td>0.0</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                        <td>-0.15528427</td>
+
+                                                        <td>-0.00775645</td>
+
+                                                        <td>-0.45483175</td>
+
+                                                        <td>-0.492662</td>
+
+                                                        <td>-0.41716048</td>
+
+                                                        <td>0.58928347</td>
+
+                                                        <td>-0.22938691</td>
+
+                                                        <td>0.06800824</td>
+
+                                                        <td>0.8532702</td>
+
+                                                        <td>-0.7573493</td>
+
+                                                        <td>-2.1379895</td>
+
+                                                        <td>-3.5607035</td>
+
+                                                        <td>-4.7117133</td>
+
+                                                        <td>-0.06404325</td>
+
+                                                        <td>5.4762077</td>
+
+                                                        <td>0.35557714</td>
+
+                                                        <td>14.544611</td>
+
+                                                        <td>0.48877475</td>
+
+                                                        <td>-0.35268104</td>
+
+                                                        <td>-0.9899249</td>
+
+                                                        <td>-0.29905495</td>
+
+                                                        <td>-0.94985974</td>
+
+                                                        <td>-0.48150468</td>
+
+                                                        <td>0.6835481</td>
+
+                                                        <td>0.0</td>
+
+                                                </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="table-note">这里只是预览，完整内容请下载 CSV 文件查看。</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="tab-structure">
+                <div class="tab-pane-inner">
+                    <div class="panel info-panel">
+                        <div class="panel-heading">原始数据里有哪些内容</div>
+                        <div class="panel-body">
+                            <p class="section-desc">
+                                这一部分说明原始数据文件里都存了什么，以及导出成 CSV 后分别放在哪些列中。
+                                看懂这一页后，就能知道后面的训练代码到底在读取哪些数据。
+                            </p>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped struct-table" style="margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th>原始字段名</th>
+                                            <th>在 CSV 里的位置</th>
+                                            <th>数据大小说明</th>
+                                            <th>这部分表示什么</th>
+                                            <th>哪些算法会用到</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                            <tr>
+                                                <td><code>observations</code></td>
+                                                <td>obs_0 ~ obs_16</td>
+                                                <td>[N, 17]</td>
+                                                <td>环境状态向量，共 17 维</td>
+                                                <td>全部算法</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><code>actions</code></td>
+                                                <td>act_0 ~ act_5</td>
+                                                <td>[N, 6]</td>
+                                                <td>动作向量，共 6 维，范围通常在 [-1, 1]</td>
+                                                <td>全部算法</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><code>rewards</code></td>
+                                                <td>reward</td>
+                                                <td>[N]</td>
+                                                <td>每一步对应奖励值</td>
+                                                <td>CQL / SAC / TD3 / DDPG 系列</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><code>next_observations</code></td>
+                                                <td>未导出到当前 CSV</td>
+                                                <td>[N, 17]</td>
+                                                <td>下一时刻状态，属于 transition 信息</td>
+                                                <td>CQL / SAC / TD3 / DDPG 系列</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><code>terminals</code></td>
+                                                <td>terminal</td>
+                                                <td>[N]</td>
+                                                <td>轨迹终止标记，0/1</td>
+                                                <td>CQL / SAC / TD3 / DDPG 系列</td>
+                                            </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="panel soft-panel">
+                                <div class="panel-heading">导出表格怎么分块</div>
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped group-table" style="margin-bottom: 0;">
+                                            <thead>
+                                                <tr>
+                                                    <th>分组名称</th>
+                                                    <th>列名前缀</th>
+                                                    <th>列数</th>
+                                                    <th>列范围</th>
+                                                    <th>说明</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                    <tr>
+                                                        <td>Observation 列</td>
+                                                        <td><code>obs_</code></td>
+                                                        <td>17</td>
+                                                        <td>obs_0 ~ obs_16</td>
+                                                        <td>对应 HDF5 中的 observations</td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>Action 列</td>
+                                                        <td><code>act_</code></td>
+                                                        <td>6</td>
+                                                        <td>act_0 ~ act_5</td>
+                                                        <td>对应 HDF5 中的 actions</td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>Reward 列</td>
+                                                        <td><code>reward</code></td>
+                                                        <td>1</td>
+                                                        <td>reward</td>
+                                                        <td>对应 HDF5 中的 rewards</td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>Terminal 列</td>
+                                                        <td><code>terminal</code></td>
+                                                        <td>1</td>
+                                                        <td>terminal</td>
+                                                        <td>对应 HDF5 中的 terminals</td>
+                                                    </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="panel soft-panel">
+                                <div class="panel-heading">算法一般会读取哪些内容</div>
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped algo-table" style="margin-bottom: 0;">
+                                            <thead>
+                                                <tr>
+                                                    <th>算法</th>
+                                                    <th>通常需要的数据</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                    <tr>
+                                                        <td>BC / BC_NB</td>
+                                                        <td>observations, actions</td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>CQL / CQL_NB</td>
+                                                        <td>observations, actions, rewards, next_observations, terminals</td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>SAC / SAC_NB</td>
+                                                        <td>observations, actions, rewards, next_observations, terminals</td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>TD3 / TD3_NB</td>
+                                                        <td>observations, actions, rewards, next_observations, terminals</td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>DDPG 家族</td>
+                                                        <td>observations, actions, rewards, next_observations, terminals</td>
+                                                    </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="table-note">简单理解：有的算法只需要“状态和动作”，有的还需要“奖励、下一步状态、是否结束”。</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="tab-charts">
+                <div class="tab-pane-inner">
+                    <p class="section-desc">
+                        这里用 3 张图帮你快速了解这份数据集。
+                        如果你不懂专业术语，可以直接把它理解为：
+                        第一张看“状态数据长什么样”，第二张看“动作数据长什么样”，第三张看“奖励和结束情况”。
+                    </p>
+
+                    <div class="thumb-grid">
+                        <div class="col-md-4 col-sm-6 thumb-col">
+                            <div class="panel chart-card">
+                                <div class="panel-heading">状态数据分布图</div>
+                                <div class="panel-body">
+
+                                        <a class="chart-thumb-wrap js-chart-preview" href="javascript:;" data-title="状态数据分布图" data-src="../media/datainfo/observations_subplots.png">
+                                            <img src="../media/datainfo/observations_subplots.png" alt="observations_subplots">
+                                        </a>
+                                        <div class="chart-meta">
+                                            这张图展示每个状态数值大概分布在哪些范围，方便判断数据是不是很集中、很分散，或者有没有明显偏移。<br>
+                                            <small>文件：observations_subplots.png / 349.59 KB</small>
+                                        </div>
+                                        <div class="chart-actions">
+                                            <button type="button" class="btn btn-primary btn-sm js-chart-preview" data-title="状态数据分布图" data-src="../media/datainfo/observations_subplots.png">
+                                                <span aria-hidden="true">🔍</span> 放大查看
+                                            </button>
+                                            <a href="../media/datainfo/observations_subplots.png" target="_blank" class="btn btn-default btn-sm">新窗口打开</a>
+                                        </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6 thumb-col">
+                            <div class="panel chart-card">
+                                <div class="panel-heading">动作数据分布图</div>
+                                <div class="panel-body">
+
+                                        <a class="chart-thumb-wrap js-chart-preview" href="javascript:;" data-title="动作数据分布图" data-src="../media/datainfo/actions_subplots.png">
+                                            <img src="../media/datainfo/actions_subplots.png" alt="actions_subplots">
+                                        </a>
+                                        <div class="chart-meta">
+                                            这张图展示动作值大多落在哪些范围，能帮助判断动作是不是经常接近最大值或最小值。<br>
+                                            <small>文件：actions_subplots.png / 99.32 KB</small>
+                                        </div>
+                                        <div class="chart-actions">
+                                            <button type="button" class="btn btn-primary btn-sm js-chart-preview" data-title="动作数据分布图" data-src="../media/datainfo/actions_subplots.png">
+                                                <span aria-hidden="true">🔍</span> 放大查看
+                                            </button>
+                                            <a href="../media/datainfo/actions_subplots.png" target="_blank" class="btn btn-default btn-sm">新窗口打开</a>
+                                        </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6 thumb-col">
+                            <div class="panel chart-card">
+                                <div class="panel-heading">奖励与结束情况图</div>
+                                <div class="panel-body">
+
+                                        <a class="chart-thumb-wrap js-chart-preview" href="javascript:;" data-title="奖励与结束情况图" data-src="../media/datainfo/reward_terminal_subplots.png">
+                                            <img src="../media/datainfo/reward_terminal_subplots.png" alt="reward_terminal_subplots">
+                                        </a>
+                                        <div class="chart-meta">
+                                            这张图左边看奖励值大概集中在哪，右边看一段数据什么时候结束。<br>
+                                            <small>文件：reward_terminal_subplots.png / 41.89 KB</small>
+                                        </div>
+                                        <div class="chart-actions">
+                                            <button type="button" class="btn btn-primary btn-sm js-chart-preview" data-title="奖励与结束情况图" data-src="../media/datainfo/reward_terminal_subplots.png">
+                                                <span aria-hidden="true">🔍</span> 放大查看
+                                            </button>
+                                            <a href="../media/datainfo/reward_terminal_subplots.png" target="_blank" class="btn btn-default btn-sm">新窗口打开</a>
+                                        </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="btn btn-primary back-top" id="backTopBtn">
+    <span aria-hidden="true">↑</span>
+</button>
+
+<div class="modal fade chart-modal" id="chartPreviewModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-chart-title" id="chartPreviewTitle">图像预览</h4>
+            </div>
+            <div class="modal-body">
+                <img id="chartPreviewImage" src="" alt="chart preview">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $(document).on('click', '.js-chart-preview', function () {
+            var title = $(this).data('title') || '图像预览';
+            var src = $(this).data('src');
+            if (!src) {
+                return;
+            }
+            $('#chartPreviewTitle').text(title);
+            $('#chartPreviewImage').attr('src', src).attr('alt', title);
+            $('#chartPreviewModal').modal('show');
+        });
+
+        $('#chartPreviewModal').on('click', function (e) {
+            if ($(e.target).hasClass('modal')) {
+                $(this).modal('hide');
+            }
+        });
+
+        var backTopBtn = $('#backTopBtn');
+        $(window).on('scroll', function () {
+            if ($(window).scrollTop() > 260) {
+                backTopBtn.fadeIn(180);
+            } else {
+                backTopBtn.fadeOut(180);
+            }
+        });
+
+        backTopBtn.on('click', function () {
+            $('html, body').animate({ scrollTop: 0 }, 280);
+        });
+    });
+</script>
+</body>
+</html>

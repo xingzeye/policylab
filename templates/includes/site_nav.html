@@ -1,0 +1,12 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'policylab/nav.css' %}">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="{% url 'home' %}"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="{% url 'learn' %}">算法轻松学</a>
+        <a href="{% url 'modelsinfo:modelsinfo' %}">原理详解</a>
+        <a href="{% url 'datainfo:index' %}">数据概览</a>
+        <a href="{% url 'results:results' %}">训练结果</a>
+        <a href="{% url 'compare:compare' %}">算法对比</a>
+    </div>
+</nav>

@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="策学 PolicyLab，用生活例子和简单步骤理解 BC、DDPG、TD3、SAC、CQL 及本项目的 NB 改进版本。">
+    <title>策学 PolicyLab · 算法轻松学</title>
+    <link rel="icon" href="{% static 'policylab/favicon.svg' %}" type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'policylab/learn.css' %}">
+    <script src="{% static 'policylab/learn.js' %}" defer></script>
+</head>
+<body>
+{% include 'includes/site_nav.html' %}
+<main>
+    <header class="hero">
+        <div class="hero-copy">
+            <p class="eyebrow">从直觉开始 · 离线强化学习</p>
+            <h1>算法的名字很长，<br>思路可以<span>很简单。</span></h1>
+            <p class="intro">同一份跑步数据，五种学习思路。<br>先理解它们为什么这样做，再走进公式和代码。</p>
+            <div class="hero-actions"><a class="button" href="#algorithms">开始理解 <span aria-hidden="true">↗</span></a><a class="text-link" href="#comparison">先看一张对照表 ↓</a></div>
+        </div>
+        <aside class="hero-note" aria-label="离线学习示意">
+            <div class="note-top"><span>学习场景</span><span class="note-number">01 / OFFLINE</span></div>
+            <h2>如果只能看录像，<br>怎么学会跑得更好？</h2>
+            <div class="scene-flow"><span>已有数据<br><small>状态 · 动作 · 奖励</small></span><b aria-hidden="true">→</b><span>学习策略<br><small>遇到状态，选择动作</small></span></div>
+            <p>训练时不再收集新经验。关键问题是：<strong>如何从已有经验中改进，又不被没见过的动作误导？</strong></p>
+            <div class="note-bottom"><span class="dot"></span> HalfCheetah · 连续动作控制</div>
+        </aside>
+    </header>
+
+    <section class="foundations" aria-labelledby="foundation-title">
+        <div class="section-heading"><p class="eyebrow">先认识三个词</p><h2 id="foundation-title">看懂后面，只需要这一点基础。</h2></div>
+        <div class="foundation-grid">
+            <article><span class="term-no">01</span><h3>策略 <small>Actor / Policy</small></h3><p>负责<strong>决定怎么做</strong>。输入当前状态，输出动作或动作分布。</p></article>
+            <article><span class="term-no">02</span><h3>价值 <small>Critic / Q</small></h3><p>负责<strong>估计值不值得</strong>。Q 值是做某个动作后，未来累计收益的估计。</p></article>
+            <article><span class="term-no">03</span><h3>离线数据 <small>Dataset</small></h3><p>已经收集好的<strong>经验记录</strong>。强化学习通常用状态、动作、奖励、下一状态和终止标记。</p></article>
+        </div>
+        <p class="quiet-note">BC 只用状态和动作即可学习。DDPG、TD3、SAC 原本是常见的在线交互、off-policy 方法；off-policy 并不等于天然适合固定离线数据。</p>
+    </section>
+
+    <section class="algorithm-section" id="algorithms" aria-labelledby="algorithms-title">
+        <div class="section-heading"><p class="eyebrow">五个算法 · 一条理解路线</p><h2 id="algorithms-title">从「照着做」到「谨慎改进」。</h2><p>推荐按 BC → DDPG → TD3 → SAC → CQL 阅读。点击名称切换，展开小问答检查理解。</p></div>
+        <nav class="algorithm-picker" aria-label="选择要学习的算法">
+            {% for item in lessons %}<a href="#{{ item.key }}" data-algorithm="{{ item.key }}" {% if forloop.first %}aria-current="true"{% endif %}><span>{{ item.name }}</span><small>{{ item.title }}</small></a>{% endfor %}
+        </nav>
+        <div class="lesson-stack">
+        {% for item in lessons %}
+            <article class="lesson" id="{{ item.key }}" data-lesson="{{ item.key }}" aria-labelledby="title-{{ item.key }}">
+                <div class="lesson-main">
+                    <div class="lesson-label"><span>{{ item.category }}</span><span>0{{ forloop.counter }} / 05</span></div>
+                    <h3 id="title-{{ item.key }}">{{ item.name }}<span>{{ item.title }}</span></h3>
+                    <p class="one-line">{{ item.line }}</p>
+                    <div class="analogy"><span>打个比方</span><p>{{ item.analogy }}</p></div>
+                    <h4>它是怎么学的？</h4><ol class="learning-steps">{% for step in item.steps %}<li>{{ step }}</li>{% endfor %}</ol>
+                    <details class="formula"><summary>再多懂一点：一句公式</summary><p class="formula-line">{{ item.formula }}</p><p>{{ item.meaning }}</p></details>
+                </div>
+                <aside class="lesson-aside">
+                    <div><h4>它擅长什么</h4><p>{{ item.strength }}</p></div>
+                    <div><h4>需要留意</h4><p>{{ item.limit }}</p></div>
+                    <div class="project-note"><span class="tiny-label">本项目的实现 / NB</span><p>{{ item.project }}</p></div>
+                    <div class="memory-line"><span>记住这句话</span><p>{{ item.memory }}</p></div>
+                    <a class="text-link detail-link" href="{% url 'modelsinfo:modelsinfo' %}?pair={{ item.key }}">继续看 {{ item.name }} 的代码与原理 ↗</a>
+                </aside>
+                <details class="self-check"><summary><span>想一想</span>{{ item.quiz }}</summary><p>{{ item.answer }}</p></details>
+            </article>
+        {% endfor %}
+        </div>
+    </section>
+
+    <section class="comparison-section" id="comparison" aria-labelledby="comparison-title">
+        <div class="section-heading"><p class="eyebrow">放在一起看</p><h2 id="comparison-title">各自解决什么问题？</h2><p>下表概括经典思想；上方卡片单独说明本项目的离线改写。</p></div>
+        <div class="table-wrap"><table><caption class="visually-hidden">五种算法的学习思路对照</caption><thead><tr><th scope="col">算法</th><th scope="col">核心问题</th><th scope="col">记忆关键词</th><th scope="col">怎么理解</th></tr></thead><tbody>
+            <tr><th scope="row">BC</th><td>怎样模仿示范？</td><td>动作拟合</td><td>照着数据做</td></tr>
+            <tr><th scope="row">DDPG</th><td>连续动作怎样改进？</td><td>Actor + Critic</td><td>按评价调动作</td></tr>
+            <tr><th scope="row">TD3</th><td>评价高估、训练不稳怎么办？</td><td>双 Q · 延迟 · 平滑</td><td>让评价和更新更稳</td></tr>
+            <tr><th scope="row">SAC</th><td>怎样兼顾收益与动作多样性？</td><td>随机策略 · 熵</td><td>保留合理选择</td></tr>
+            <tr><th scope="row">CQL</th><td>离线数据外动作被高估怎么办？</td><td>保守价值学习</td><td>陌生动作谨慎打分</td></tr>
+        </tbody></table></div>
+        <div class="takeaway"><strong>NB 是本项目的版本名，不是通用算法名称。</strong><p>它没有统一的一招：BC_NB 使用回报加权，其他版本分别调整保守项、策略约束与训练尺度。是否改进，要看同等设置下的独立评估；训练损失和图表本身不能证明回报更高。</p></div>
+    </section>
+
+    <section class="next-step"><div><p class="eyebrow">把直觉接到真实实验</p><h2>理解思路之后，看看它们学得怎样。</h2><p>数据、训练曲线和对比分析，都保留在这里。</p></div><div class="next-actions"><a class="button" href="{% url 'results:results' %}">查看训练结果 ↗</a><a class="text-link" href="{% url 'compare:compare' %}">对比 Base 与 NB →</a></div></section>
+    <footer class="site-footer"><p><strong>策学 · PolicyLab</strong>　从直觉走向算法。</p><p>延伸阅读：<a href="https://spinningup.openai.com/en/latest/algorithms/ddpg.html">DDPG</a> · <a href="https://spinningup.openai.com/en/latest/algorithms/td3.html">TD3</a> · <a href="https://spinningup.openai.com/en/latest/algorithms/sac.html">SAC</a>（OpenAI Spinning Up） · <a href="https://arxiv.org/abs/2006.04779">CQL 原论文</a>。项目实现以 AIcodes 中的源码为准。</p></footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "env_name": "halfcheetah-medium-v2",
+  "hidden_sizes": [
+    256,
+    256
+  ],
+  "gamma": 0.99,
+  "tau": 0.005,
+  "lr_actor": 0.0003,
+  "lr_critic": 0.0003,
+  "lr_alpha": 0.0003,
+  "batch_size": 256,
+  "num_epochs": 150,
+  "val_ratio": 0.1,
+  "seed": 42,
+  "weight_decay": 0.0001,
+  "grad_clip": 5.0,
+  "num_workers": 0,
+  "device": "cuda",
+  "data_path": "./halfcheetah_medium-v2.hdf5",
+  "save_dir": "checkpoints/SAC",
+  "reward_scale": true,
+  "alpha_init": 0.2,
+  "learn_alpha": true,
+  "log_std_min": -5.0,
+  "log_std_max": 2.0,
+  "awac_lambda": 1.0,
+  "weight_clip": 20.0,
+  "best_model_name": "best_model.pt",
+  "history_csv_name": "training_history.csv"
+}

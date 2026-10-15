@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>算法结果展示</title>
+    <link rel="icon" href="../static/policylab/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        body { background:#f6f7fb; font-family:"Microsoft YaHei",Arial,sans-serif; }
+        .page-wrap { max-width: 1280px; margin: 24px auto 40px; }
+        .page-title { margin:0 0 8px; font-size:30px; font-weight:600; }
+        .page-subtitle { color:#666; margin-bottom:18px; }
+        .toolbar-panel, .block-panel, .metric-card { border-radius:10px; border:1px solid #e8ebf2; box-shadow:0 2px 10px rgba(0,0,0,.04); }
+        .toolbar-panel .panel-body, .block-panel .panel-body { padding:20px; }
+        .metric-card { background:#fff; padding:18px; margin-bottom:18px; min-height:116px; }
+        .metric-card .label-text { color:#777; font-size:13px; }
+        .metric-card .value-text { margin-top:8px; font-size:26px; font-weight:700; color:#2c3e50; word-break:break-word; }
+        .metric-card .hint-text { margin-top:8px; color:#888; font-size:12px; }
+        .status-box { border-radius:10px; padding:16px 18px; margin-bottom:18px; }
+        .status-box h4 { margin-top:0; margin-bottom:8px; }
+        .status-success { background:#eef9f2; border:1px solid #c8ead3; }
+        .status-warning { background:#fff8e9; border:1px solid #f1db9a; }
+        .status-danger { background:#fff0f0; border:1px solid #f0c6c6; }
+        .nav-tabs { margin-bottom:18px; }
+        .chart-card { border:1px solid #e8ebf2; border-radius:10px; background:#fff; margin-bottom:18px; overflow:hidden; }
+        .chart-card .chart-head { padding:12px 15px; border-bottom:1px solid #eef1f6; font-weight:600; background:#fafbfe; }
+        .chart-card .chart-body { padding:14px; }
+        .chart-card img { width:100%; background:#fff; border:1px solid #eef1f6; border-radius:6px; }
+        .file-table td, .file-table th, .metric-table td, .metric-table th { vertical-align:middle !important; }
+        .beginner-box { background:#f7fbff; border:1px solid #dbeeff; border-radius:10px; padding:18px; line-height:1.9; }
+        .legend-chip { display:inline-block; margin:0 8px 8px 0; padding:6px 10px; border-radius:16px; background:#f1f3f8; color:#555; font-size:12px; }
+        .section-title { margin-top:0; margin-bottom:14px; font-size:20px; }
+        .mini-muted { color:#888; font-size:12px; }
+        pre.code-path { margin:0; background:#f8f8f8; border-radius:8px; border:1px solid #ececec; }
+    </style>
+</head>
+<body>
+
+<link rel="stylesheet" href="../static/policylab/nav.css">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="../index.html"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="../learn/index.html">算法轻松学</a>
+        <a href="../modelsinfo/index.html">原理详解</a>
+        <a href="../datainfo/index.html">数据概览</a>
+        <a href="index.html">训练结果</a>
+        <a href="../compare/index.html">算法对比</a>
+    </div>
+</nav>
+
+<div class="container-fluid page-wrap">
+    <h1 class="page-title">单算法结果展示</h1>
+    <div class="page-subtitle">先看结论，再看主图，最后再看原始文件。这样对初学者更友好。</div>
+
+
+        <div class="panel panel-default toolbar-panel">
+            <div class="panel-body">
+                <form method="get" class="form-inline">
+                    <div class="form-group">
+                        <label for="algorithm"><strong>选择算法：</strong></label>
+                        <select name="algorithm" id="algorithm" class="form-control" onchange="window.location.href = this.value + '.html'">
+
+                                <option value="BC" >BC</option>
+
+                                <option value="BC_NB" >BC_NB</option>
+
+                                <option value="CQL" >CQL</option>
+
+                                <option value="CQL_NB" >CQL_NB</option>
+
+                                <option value="DDPG" >DDPG</option>
+
+                                <option value="DDPG_NB" >DDPG_NB</option>
+
+                                <option value="SAC" selected>SAC</option>
+
+                                <option value="SAC_NB" >SAC_NB</option>
+
+                                <option value="TD3" >TD3</option>
+
+                                <option value="TD3_NB" >TD3_NB</option>
+
+                        </select>
+                    </div>
+                    <span class="legend-chip">当前目录：.\AIcodes/checkpoints/SAC</span>
+                    <span class="legend-chip">分类：离线强化学习 / 基线方法</span>
+                    <span class="legend-chip">别名：AWAC-SAC</span>
+                </form>
+            </div>
+        </div>
+
+        <div class="status-box status-success">
+            <h4>结果完整</h4>
+            <div>SAC 的模型文件和日志文件都已生成，可以先看摘要和主图。</div>
+        </div>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#overview" aria-controls="overview" role="tab" data-toggle="tab">结果概览</a></li>
+            <li role="presentation"><a href="#charts" aria-controls="charts" role="tab" data-toggle="tab">核心图表</a></li>
+            <li role="presentation"><a href="#metrics" aria-controls="metrics" role="tab" data-toggle="tab">详细指标</a></li>
+            <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">文件与下载</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="overview">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default block-panel">
+                            <div class="panel-body">
+                                <h3 class="section-title">小白先看</h3>
+                                <div class="beginner-box">
+                                    <p><strong>SAC</strong>：兼顾收益与探索，但如果日志出现 NaN，要优先视为训练异常而不是“结果更好”。</p>
+                                    <p style="margin-bottom:0;">这一类结果建议先看 critic 和 actor 是否稳定，再看 alpha 或 BC 项等进阶指标。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="metric-card">
+                            <div class="label-text">验证 critic1 损失</div>
+                            <div class="value-text">986091.32</div>
+                            <div class="hint-text">这是当前页面最建议先看的结果值。</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="metric-card">
+                            <div class="label-text">验证 critic2 损失</div>
+                            <div class="value-text">1006871.44</div>
+                            <div class="hint-text">这是当前页面最建议先看的结果值。</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="metric-card">
+                            <div class="label-text">验证 actor 损失</div>
+                            <div class="value-text">-47.4342</div>
+                            <div class="hint-text">这是当前页面最建议先看的结果值。</div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default block-panel">
+                            <div class="panel-body">
+                                <h3 class="section-title">怎么看这个结果</h3>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6"><div class="metric-card"><div class="label-text">第一步</div><div class="value-text" style="font-size:20px;">看状态</div><div class="hint-text">先判断是否完整、是否有 NaN。</div></div></div>
+                                    <div class="col-md-3 col-sm-6"><div class="metric-card"><div class="label-text">第二步</div><div class="value-text" style="font-size:20px;">看主指标</div><div class="hint-text">先看误差、critic loss 或关键验证指标。</div></div></div>
+                                    <div class="col-md-3 col-sm-6"><div class="metric-card"><div class="label-text">第三步</div><div class="value-text" style="font-size:20px;">看主图</div><div class="hint-text">曲线平稳通常比单个数值更重要。</div></div></div>
+                                    <div class="col-md-3 col-sm-6"><div class="metric-card"><div class="label-text">第四步</div><div class="value-text" style="font-size:20px;">再看文件</div><div class="hint-text">需要复核时再打开 csv、pt 和全部图片。</div></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="charts">
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <h3 class="section-title">核心图表</h3>
+                        <p class="mini-muted">主图优先展示最值得先看的结果图，进阶图放在后面。</p>
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Critic1 Loss</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/critic1_loss.png" target="_blank">
+                                            <img src="../assets/results/SAC/critic1_loss.png" alt="Critic1 Loss">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Critic2 Loss</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/critic2_loss.png" target="_blank">
+                                            <img src="../assets/results/SAC/critic2_loss.png" alt="Critic2 Loss">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Actor Loss</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/actor_loss.png" target="_blank">
+                                            <img src="../assets/results/SAC/actor_loss.png" alt="Actor Loss">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <h3 class="section-title">进阶图表</h3>
+                        <div class="row">
+
+                            <div class="col-md-4 col-sm-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Alpha</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/alpha.png" target="_blank">
+                                            <img src="../assets/results/SAC/alpha.png" alt="Alpha">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Reward</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/reward.png" target="_blank">
+                                            <img src="../assets/results/SAC/reward.png" alt="Reward">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Q1</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/Q1.png" target="_blank">
+                                            <img src="../assets/results/SAC/Q1.png" alt="Q1">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Q2</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/Q2.png" target="_blank">
+                                            <img src="../assets/results/SAC/Q2.png" alt="Q2">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Advantage</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/advantage.png" target="_blank">
+                                            <img src="../assets/results/SAC/advantage.png" alt="Advantage">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Weight</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/weight.png" target="_blank">
+                                            <img src="../assets/results/SAC/weight.png" alt="Weight">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                                <div class="chart-card">
+                                    <div class="chart-head">Log Prob Data</div>
+                                    <div class="chart-body">
+                                        <a href="../assets/results/SAC/log_prob_data.png" target="_blank">
+                                            <img src="../assets/results/SAC/log_prob_data.png" alt="Log Prob Data">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="metrics">
+
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <h3 class="section-title">最新训练记录</h3>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped metric-table">
+                                <thead>
+                                    <tr>
+                                        <th width="28%">名称</th>
+                                        <th width="22%">字段</th>
+                                        <th>数值</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>训练轮次</td>
+                                        <td><code>epoch</code></td>
+                                        <td>150.0000</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_critic1_loss</td>
+                                        <td><code>train_critic1_loss</code></td>
+                                        <td>978994.09</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_critic2_loss</td>
+                                        <td><code>train_critic2_loss</code></td>
+                                        <td>984976.99</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_actor_loss</td>
+                                        <td><code>train_actor_loss</code></td>
+                                        <td>-48.1015</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_reward</td>
+                                        <td><code>train_reward</code></td>
+                                        <td>0.000295</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_Q1</td>
+                                        <td><code>train_Q1</code></td>
+                                        <td>-103619.77</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_Q2</td>
+                                        <td><code>train_Q2</code></td>
+                                        <td>-103620.14</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_log_prob_data</td>
+                                        <td><code>train_log_prob_data</code></td>
+                                        <td>7.2919</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_alpha</td>
+                                        <td><code>train_alpha</code></td>
+                                        <td>148.4132</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_advantage</td>
+                                        <td><code>train_advantage</code></td>
+                                        <td>-122.7382</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_weight</td>
+                                        <td><code>train_weight</code></td>
+                                        <td>6.8430</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>验证 critic1 损失</td>
+                                        <td><code>val_critic1_loss</code></td>
+                                        <td>986091.32</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>验证 critic2 损失</td>
+                                        <td><code>val_critic2_loss</code></td>
+                                        <td>1006871.44</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>验证 actor 损失</td>
+                                        <td><code>val_actor_loss</code></td>
+                                        <td>-47.4342</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>val_reward</td>
+                                        <td><code>val_reward</code></td>
+                                        <td>-0.002745</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>val_Q1</td>
+                                        <td><code>val_Q1</code></td>
+                                        <td>-103672.12</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>val_Q2</td>
+                                        <td><code>val_Q2</code></td>
+                                        <td>-103673.08</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>val_log_prob_data</td>
+                                        <td><code>val_log_prob_data</code></td>
+                                        <td>7.2251</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>val_alpha</td>
+                                        <td><code>val_alpha</code></td>
+                                        <td>148.4132</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>val_advantage</td>
+                                        <td><code>val_advantage</code></td>
+                                        <td>-121.7498</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>验证平均权重</td>
+                                        <td><code>val_weight</code></td>
+                                        <td>6.8629</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>actor_lr</td>
+                                        <td><code>actor_lr</code></td>
+                                        <td>0.000000</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>critic1_lr</td>
+                                        <td><code>critic1_lr</code></td>
+                                        <td>0.000000</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>critic2_lr</td>
+                                        <td><code>critic2_lr</code></td>
+                                        <td>0.000000</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="files">
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <h3 class="section-title">输入输出与产物</h3>
+<pre class="code-path">AIcodes/SAC.py
+checkpoints/SAC/</pre>
+                        <p class="mini-muted" style="margin-top:12px;">这部分展示当前算法结果目录中的全部文件，图片可直接查看，其他文件可下载。</p>
+                    </div>
+                </div>
+                <div class="panel panel-default block-panel">
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped file-table">
+                                <thead>
+                                    <tr>
+                                        <th width="28%">文件名</th>
+                                        <th width="14%">大小</th>
+                                        <th width="20%">类型</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>Q1.png</td>
+                                        <td>28.91 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/Q1.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/Q1.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Q2.png</td>
+                                        <td>29.33 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/Q2.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/Q2.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>actor_loss.png</td>
+                                        <td>38.87 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/actor_loss.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/actor_loss.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>advantage.png</td>
+                                        <td>42.32 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/advantage.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/advantage.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>alpha.png</td>
+                                        <td>22.87 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/alpha.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/alpha.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>best_model.pt</td>
+                                        <td>859.53 KB</td>
+                                        <td>
+                                            模型文件
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/best_model.pt" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/best_model.pt">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>critic1_loss.png</td>
+                                        <td>38.19 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/critic1_loss.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/critic1_loss.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>critic2_loss.png</td>
+                                        <td>39.95 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/critic2_loss.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/critic2_loss.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>log_prob_data.png</td>
+                                        <td>40.96 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/log_prob_data.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/log_prob_data.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>reward.png</td>
+                                        <td>26.89 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/reward.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/reward.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>train_config.json</td>
+                                        <td>697.00 B</td>
+                                        <td>
+                                            其他
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/train_config.json" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/train_config.json">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>training_history.csv</td>
+                                        <td>66.83 KB</td>
+                                        <td>
+                                            日志/指标
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/training_history.csv" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/training_history.csv">下载</a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>weight.png</td>
+                                        <td>34.99 KB</td>
+                                        <td>
+                                            结果图
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-info" href="../assets/results/SAC/weight.png" target="_blank">查看</a>
+                                            <a class="btn btn-xs btn-default" href="../assets/results/SAC/weight.png">下载</a>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+</body>
+</html>

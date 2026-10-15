@@ -1,0 +1,32 @@
+{
+  "data_path": "halfcheetah_medium-v2.hdf5",
+  "save_dir": "checkpoints/TD3_NB",
+  "device": "cuda",
+  "batch_size": 256,
+  "lr_actor": 0.0003,
+  "lr_critic": 0.0003,
+  "gamma": 0.99,
+  "tau": 0.005,
+  "policy_noise": 0.2,
+  "noise_clip": 0.5,
+  "policy_delay": 2,
+  "max_action": 1.0,
+  "num_epochs": 150,
+  "hidden": [
+    256,
+    256
+  ],
+  "seed": 42,
+  "val_ratio": 0.1,
+  "weight_decay": 0.0001,
+  "grad_clip": 5.0,
+  "num_workers": 0,
+  "alpha_bc": 2.5,
+  "bc_coef": 1.0,
+  "reward_scale": true,
+  "best_model_name": "best_model.pt",
+  "log_csv_name": "training_log.csv",
+  "critic_curve_name": "critic_loss.png",
+  "actor_curve_name": "actor_loss.png",
+  "q_curve_name": "q_value.png"
+}

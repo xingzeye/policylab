@@ -1,0 +1,236 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>实验结果对比分析</title>
+    <link rel="icon" href="{% static 'policylab/favicon.svg' %}" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+    <style>
+        body { background: #f5f6f8; font-family: "Microsoft YaHei", Arial, sans-serif; }
+        .page-header { margin-top: 24px; }
+        .summary-card { border-radius: 6px; border: 1px solid #e8e8e8; background: #fff; padding: 16px; margin-bottom: 15px; min-height: 148px; }
+        .summary-card h4 { margin-top: 0; font-size: 18px; }
+        .summary-card p { color: #666; line-height: 1.7; margin-bottom: 8px; }
+        .tip-box { background: #fffbe6; border: 1px solid #faebcc; border-radius: 4px; padding: 15px; margin-bottom: 18px; }
+        .pair-select { max-width: 320px; }
+        .nav-tabs { margin-bottom: 18px; }
+        .panel-chart img { width: 100%; border: 1px solid #eee; background: #fff; }
+        .muted-help { color: #888; font-size: 12px; }
+        .table > thead > tr > th { background: #fafafa; }
+        .file-list li { margin-bottom: 8px; }
+        .status-badge { margin-left: 8px; }
+        .conclusion-box { background: #eef6ff; border: 1px solid #cfe2ff; border-radius: 4px; padding: 15px; margin-bottom: 18px; }
+        .method-col-title { margin-top: 0; margin-bottom: 12px; }
+        .empty-box { color: #999; padding: 18px 10px; text-align: center; border: 1px dashed #ddd; background: #fcfcfc; }
+        .section-note { color: #666; margin-bottom: 12px; }
+        .small-label { color: #999; font-size: 12px; }
+        .top-gap { margin-top: 10px; }
+    </style>
+</head>
+<body>
+{% include 'includes/site_nav.html' %}
+<div class="container-fluid">
+    <div class="page-header">
+        <h2>实验结果对比分析 <small>{{ pair_cfg.title }}</small></h2>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <form method="get" class="form-inline">
+                <div class="form-group pair-select">
+                    <label for="pair">选择算法对：</label>
+                    <select id="pair" name="pair" class="form-control" onchange="this.form.submit()">
+                        {% for item in pair_options %}
+                            <option value="{{ item.key }}" {% if item.selected %}selected{% endif %}>{{ item.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-8 text-right">
+            <p class="muted-help top-gap">结果目录：<code>{{ checkpoints_root }}</code></p>
+        </div>
+    </div>
+
+    <div class="tip-box">
+        <strong>小白先看：</strong>
+        {{ pair_cfg.beginner }}
+        <br>
+        <span class="small-label">这一页先帮你判断“哪边结果更完整、哪边更稳定”，再带你看关键差异。</span>
+    </div>
+
+    <div class="conclusion-box">
+        <strong>一句话结论：</strong> {{ conclusion }}
+    </div>
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#overview" role="tab" data-toggle="tab">概览</a></li>
+        <li><a href="#metrics" role="tab" data-toggle="tab">关键指标对比</a></li>
+        <li><a href="#charts" role="tab" data-toggle="tab">核心曲线对比</a></li>
+        <li><a href="#files" role="tab" data-toggle="tab">文件与产物</a></li>
+        <li><a href="#explain" role="tab" data-toggle="tab">怎么看差异</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="overview">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="summary-card">
+                        <h4 class="method-col-title">
+                            {{ base_summary.name }}
+                            <span class="label {{ base_summary.status_class }} status-badge">{{ base_summary.status_text }}</span>
+                        </h4>
+                        <p><strong>类型：</strong>{{ pair_cfg.family }} / Base</p>
+                        <p><strong>训练日志：</strong>{{ base_summary.train_csv_name|default:"未找到" }}</p>
+                        <p><strong>模型文件：</strong>{% if base_summary.has_model %}已找到{% else %}未找到{% endif %}</p>
+                        <p><strong>异常情况：</strong>{% if base_summary.has_nan %}<span class="text-warning">检测到 NaN</span>{% else %}<span class="text-success">未发现明显异常</span>{% endif %}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="summary-card">
+                        <h4 class="method-col-title">
+                            {{ nb_summary.name }}
+                            <span class="label {{ nb_summary.status_class }} status-badge">{{ nb_summary.status_text }}</span>
+                        </h4>
+                        <p><strong>类型：</strong>{{ pair_cfg.family }} / NB</p>
+                        <p><strong>训练日志：</strong>{{ nb_summary.train_csv_name|default:"未找到" }}</p>
+                        <p><strong>模型文件：</strong>{% if nb_summary.has_model %}已找到{% else %}未找到{% endif %}</p>
+                        <p><strong>异常情况：</strong>{% if nb_summary.has_nan %}<span class="text-warning">检测到 NaN</span>{% else %}<span class="text-success">未发现明显异常</span>{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tip-box">
+                <strong>这组方法的核心差异：</strong> {{ pair_cfg.difference }}
+            </div>
+        </div>
+
+        <div class="tab-pane" id="metrics">
+            <p class="section-note">这里优先展示小白最容易理解的关键指标，不直接把整张 CSV 原样丢给你。</p>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>指标</th>
+                            <th>Base</th>
+                            <th>NB</th>
+                            <th>差值（NB-Base）</th>
+                            <th>简单判断</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in metric_rows %}
+                        <tr>
+                            <td>{{ row.label }}</td>
+                            <td>{{ row.base_value }}</td>
+                            <td>{{ row.nb_value }}</td>
+                            <td>{{ row.difference }}</td>
+                            <td>{{ row.winner }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="charts">
+            <p class="section-note">只放最重要的几张图，避免一上来就看花眼。</p>
+            {% for item in chart_rows %}
+            <div class="panel panel-default panel-chart">
+                <div class="panel-heading"><strong>{{ item.label }}</strong></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>{{ base_summary.name }}</h5>
+                            {% if item.base_chart %}
+                                <a href="{{ item.base_chart.url }}" target="_blank">
+                                    <img src="{{ item.base_chart.url }}" alt="{{ item.base_chart.name }}">
+                                </a>
+                                <p class="muted-help">{{ item.base_chart.name }}</p>
+                            {% else %}
+                                <div class="empty-box">未找到对应图表</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5>{{ nb_summary.name }}</h5>
+                            {% if item.nb_chart %}
+                                <a href="{{ item.nb_chart.url }}" target="_blank">
+                                    <img src="{{ item.nb_chart.url }}" alt="{{ item.nb_chart.name }}">
+                                </a>
+                                <p class="muted-help">{{ item.nb_chart.name }}</p>
+                            {% else %}
+                                <div class="empty-box">未找到对应图表</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="tab-pane" id="files">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><strong>{{ base_summary.name }} 文件</strong></div>
+                        <div class="panel-body">
+                            <ul class="list-unstyled file-list">
+                                {% for item in base_summary.files %}
+                                <li>
+                                    <a href="{{ item.url }}" target="_blank">{{ item.name }}</a>
+                                    <span class="text-muted">({{ item.size }})</span>
+                                </li>
+                                {% empty %}
+                                <li class="text-muted">暂无文件</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><strong>{{ nb_summary.name }} 文件</strong></div>
+                        <div class="panel-body">
+                            <ul class="list-unstyled file-list">
+                                {% for item in nb_summary.files %}
+                                <li>
+                                    <a href="{{ item.url }}" target="_blank">{{ item.name }}</a>
+                                    <span class="text-muted">({{ item.size }})</span>
+                                </li>
+                                {% empty %}
+                                <li class="text-muted">暂无文件</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="explain">
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>怎么看这页</strong></div>
+                <div class="panel-body">
+                    <ol>
+                        <li>先看顶部状态：结果完整、结果异常、结果不完整，先判断“能不能用”。</li>
+                        <li>再看关键指标：不是所有数字都需要看，先看表格里最上面的 2 到 4 个指标。</li>
+                        <li>最后看核心曲线：如果曲线波动很大、或者出现 NaN，说明训练稳定性存在问题。</li>
+                    </ol>
+                    <hr>
+                    <p><strong>小白建议：</strong></p>
+                    <ul>
+                        <li>如果一边出现 NaN，先把它当异常结果，而不是继续和另一边比大小。</li>
+                        <li>如果两边都正常，再看“最终损失/误差”和“曲线是否更平稳”。</li>
+                        <li>NB 版不一定所有指标都更好，但通常会多一个改进项，适合解释“改进来自哪里”。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

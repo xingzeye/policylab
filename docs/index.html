@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="策学 PolicyLab，用生活例子和简单步骤理解 BC、DDPG、TD3、SAC、CQL 及本项目的 NB 改进版本。">
+    <title>策学 PolicyLab · 算法轻松学</title>
+    <link rel="icon" href="static/policylab/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="static/policylab/learn.css">
+    <script src="static/policylab/learn.js" defer></script>
+</head>
+<body>
+
+<link rel="stylesheet" href="static/policylab/nav.css">
+<nav class="pl-nav" aria-label="网站导航">
+    <a class="pl-brand" href="index.html"><span class="pl-mark" aria-hidden="true">策</span><span>策学 <small>PolicyLab</small></span></a>
+    <div class="pl-links">
+        <a href="learn/index.html">算法轻松学</a>
+        <a href="modelsinfo/index.html">原理详解</a>
+        <a href="datainfo/index.html">数据概览</a>
+        <a href="results/index.html">训练结果</a>
+        <a href="compare/index.html">算法对比</a>
+    </div>
+</nav>
+
+<main>
+    <header class="hero">
+        <div class="hero-copy">
+            <p class="eyebrow">从直觉开始 · 离线强化学习</p>
+            <h1>算法的名字很长，<br>思路可以<span>很简单。</span></h1>
+            <p class="intro">同一份跑步数据，五种学习思路。<br>先理解它们为什么这样做，再走进公式和代码。</p>
+            <div class="hero-actions"><a class="button" href="#algorithms">开始理解 <span aria-hidden="true">↗</span></a><a class="text-link" href="#comparison">先看一张对照表 ↓</a></div>
+        </div>
+        <aside class="hero-note" aria-label="离线学习示意">
+            <div class="note-top"><span>学习场景</span><span class="note-number">01 / OFFLINE</span></div>
+            <h2>如果只能看录像，<br>怎么学会跑得更好？</h2>
+            <div class="scene-flow"><span>已有数据<br><small>状态 · 动作 · 奖励</small></span><b aria-hidden="true">→</b><span>学习策略<br><small>遇到状态，选择动作</small></span></div>
+            <p>训练时不再收集新经验。关键问题是：<strong>如何从已有经验中改进，又不被没见过的动作误导？</strong></p>
+            <div class="note-bottom"><span class="dot"></span> HalfCheetah · 连续动作控制</div>
+        </aside>
+    </header>
+
+    <section class="foundations" aria-labelledby="foundation-title">
+        <div class="section-heading"><p class="eyebrow">先认识三个词</p><h2 id="foundation-title">看懂后面，只需要这一点基础。</h2></div>
+        <div class="foundation-grid">
+            <article><span class="term-no">01</span><h3>策略 <small>Actor / Policy</small></h3><p>负责<strong>决定怎么做</strong>。输入当前状态，输出动作或动作分布。</p></article>
+            <article><span class="term-no">02</span><h3>价值 <small>Critic / Q</small></h3><p>负责<strong>估计值不值得</strong>。Q 值是做某个动作后，未来累计收益的估计。</p></article>
+            <article><span class="term-no">03</span><h3>离线数据 <small>Dataset</small></h3><p>已经收集好的<strong>经验记录</strong>。强化学习通常用状态、动作、奖励、下一状态和终止标记。</p></article>
+        </div>
+        <p class="quiet-note">BC 只用状态和动作即可学习。DDPG、TD3、SAC 原本是常见的在线交互、off-policy 方法；off-policy 并不等于天然适合固定离线数据。</p>
+    </section>
+
+    <section class="algorithm-section" id="algorithms" aria-labelledby="algorithms-title">
+        <div class="section-heading"><p class="eyebrow">五个算法 · 一条理解路线</p><h2 id="algorithms-title">从「照着做」到「谨慎改进」。</h2><p>推荐按 BC → DDPG → TD3 → SAC → CQL 阅读。点击名称切换，展开小问答检查理解。</p></div>
+        <nav class="algorithm-picker" aria-label="选择要学习的算法">
+            <a href="#bc" data-algorithm="bc" aria-current="true"><span>BC</span><small>先学会模仿</small></a><a href="#ddpg" data-algorithm="ddpg" ><span>DDPG</span><small>一边行动，一边打分</small></a><a href="#td3" data-algorithm="td3" ><span>TD3</span><small>先让评价稳下来</small></a><a href="#sac" data-algorithm="sac" ><span>SAC</span><small>保留合理的选择余地</small></a><a href="#cql" data-algorithm="cql" ><span>CQL</span><small>对陌生动作谨慎打分</small></a>
+        </nav>
+        <div class="lesson-stack">
+
+            <article class="lesson" id="bc" data-lesson="bc" aria-labelledby="title-bc">
+                <div class="lesson-main">
+                    <div class="lesson-label"><span>模仿学习</span><span>01 / 05</span></div>
+                    <h3 id="title-bc">BC<span>先学会模仿</span></h3>
+                    <p class="one-line">看到相似的状态，就模仿数据里做过的动作。</p>
+                    <div class="analogy"><span>打个比方</span><p>像跟着教练的录像学跑步：看到身体前倾，就学习教练此时如何摆腿。</p></div>
+                    <h4>它是怎么学的？</h4><ol class="learning-steps"><li>取出一条「状态 → 动作」示范。</li><li>让策略根据状态预测动作。</li><li>比较预测与示范的差距，反复缩小误差。</li></ol>
+                    <details class="formula"><summary>再多懂一点：一句公式</summary><p class="formula-line">模仿误差 = 平均（预测动作 − 示范动作）²</p><p>误差越小，动作越像示范；它不直接判断这样做能拿多少长期奖励。</p></details>
+                </div>
+                <aside class="lesson-aside">
+                    <div><h4>它擅长什么</h4><p>结构简单，是理解其他方法的起点。</p></div>
+                    <div><h4>需要留意</h4><p>示范不好也会照学；遇到数据中少见的状态，误差可能逐步累积。</p></div>
+                    <div class="project-note"><span class="tiny-label">本项目的实现 / NB</span><p>BC.py 直接拟合示范动作；BC_NB.py 按轨迹回报加权，让高回报轨迹对学习的影响更大。加权不保证实际回报一定提高。</p></div>
+                    <div class="memory-line"><span>记住这句话</span><p>BC：照着做。BC_NB：更重视高回报的示范。</p></div>
+                    <a class="text-link detail-link" href="modelsinfo/bc.html">继续看 BC 的代码与原理 ↗</a>
+                </aside>
+                <details class="self-check"><summary><span>想一想</span>BC 的动作误差很小，是否说明实际跑得一定更好？</summary><p>不一定。动作相似只说明模仿得像，真实表现还需要在环境中评估累计回报。</p></details>
+            </article>
+
+            <article class="lesson" id="ddpg" data-lesson="ddpg" aria-labelledby="title-ddpg">
+                <div class="lesson-main">
+                    <div class="lesson-label"><span>确定性策略</span><span>02 / 05</span></div>
+                    <h3 id="title-ddpg">DDPG<span>一边行动，一边打分</span></h3>
+                    <p class="one-line">策略负责出动作，评价网络负责估计这个动作的长期价值。</p>
+                    <div class="analogy"><span>打个比方</span><p>像运动员和教练配合：运动员尝试摆腿方式，教练估计哪种动作更有利于接下来跑得快。</p></div>
+                    <h4>它是怎么学的？</h4><ol class="learning-steps"><li>Critic 从奖励和下一状态学习动作的 Q 值。</li><li>Actor 为当前状态给出一个确定的动作。</li><li>经典 DDPG 沿着 Critic 的评价改进 Actor，并缓慢更新目标网络。</li></ol>
+                    <details class="formula"><summary>再多懂一点：一句公式</summary><p class="formula-line">评价目标 = 当前奖励 + 折扣因子 × 下一步的预计价值</p><p>Q 值看的是后续累计收益的估计；Actor 追求更高的估计值。终止状态不再计入未来价值。</p></details>
+                </div>
+                <aside class="lesson-aside">
+                    <div><h4>它擅长什么</h4><p>能直接输出连续动作，例如关节施加多大的力。</p></div>
+                    <div><h4>需要留意</h4><p>评价可能高估，策略也可能追着错误高分走；直接用在固定离线数据上尤其需要约束。</p></div>
+                    <div class="project-note"><span class="tiny-label">本项目的实现 / NB</span><p>DDPG.py 已使用双 Critic、延迟更新和优势加权模仿，属于离线改写，不是原始 DDPG。DDPG_NB.py 使用 Q 导向项与 BC 正则，让策略兼顾估计收益和数据中的动作。</p></div>
+                    <div class="memory-line"><span>记住这句话</span><p>经典 DDPG：听评价改动作。本项目：再结合离线数据约束。</p></div>
+                    <a class="text-link detail-link" href="modelsinfo/ddpg.html">继续看 DDPG 的代码与原理 ↗</a>
+                </aside>
+                <details class="self-check"><summary><span>想一想</span>Q 值变大，能否直接认为真实奖励提高了？</summary><p>不能。Q 值是模型的估计，可能存在高估；需要独立环境评估来验证。</p></details>
+            </article>
+
+            <article class="lesson" id="td3" data-lesson="td3" aria-labelledby="title-td3">
+                <div class="lesson-main">
+                    <div class="lesson-label"><span>稳定化改进</span><span>03 / 05</span></div>
+                    <h3 id="title-td3">TD3<span>先让评价稳下来</span></h3>
+                    <p class="one-line">在 DDPG 思路上，用双评价、慢一点的策略更新和目标动作扰动减少误判。</p>
+                    <div class="analogy"><span>打个比方</span><p>像请两位教练打分，参考较谨慎的那个；动作方案不用每次打分后立刻大改。</p></div>
+                    <h4>它是怎么学的？</h4><ol class="learning-steps"><li>训练两个 Critic，用较小的目标 Q 值构造学习目标。</li><li>给目标动作加小幅且受限的噪声，平滑局部尖峰。</li><li>Critic 多学几步，Actor 再更新；目标网络随策略延迟更新。</li></ol>
+                    <details class="formula"><summary>再多懂一点：一句公式</summary><p class="formula-line">目标评价参考 = min（目标 Q₁，目标 Q₂）</p><p>两个目标评价取较小值，有助于缓解高估；这仍然是估计，不是可靠性的保证。</p></details>
+                </div>
+                <aside class="lesson-aside">
+                    <div><h4>它擅长什么</h4><p>三个稳定技巧清楚，适合与 DDPG 对照学习。</p></div>
+                    <div><h4>需要留意</h4><p>更稳不等于自动适合离线数据；策略仍可能选择数据外动作。</p></div>
+                    <div class="project-note"><span class="tiny-label">本项目的实现 / NB</span><p>TD3.py 实现双 Critic、目标动作平滑和延迟更新；TD3_NB.py 加入 BC 正则与 Q 项尺度平衡，让策略别轻易远离数据动作。</p></div>
+                    <div class="memory-line"><span>记住这句话</span><p>TD3：双评价、慢更新、平滑目标。TD3_NB：再加模仿约束。</p></div>
+                    <a class="text-link detail-link" href="modelsinfo/td3.html">继续看 TD3 的代码与原理 ↗</a>
+                </aside>
+                <details class="self-check"><summary><span>想一想</span>两个 Critic 的评价应该取平均，还是取较小值构造目标？</summary><p>TD3 采用较小值来构造目标，目的是缓解过高估计；Actor 的更新通常使用第一个 Critic。</p></details>
+            </article>
+
+            <article class="lesson" id="sac" data-lesson="sac" aria-labelledby="title-sac">
+                <div class="lesson-main">
+                    <div class="lesson-label"><span>随机策略</span><span>04 / 05</span></div>
+                    <h3 id="title-sac">SAC<span>保留合理的选择余地</span></h3>
+                    <p class="one-line">经典 SAC 既追求高奖励，也鼓励策略保持适度的动作多样性。</p>
+                    <div class="analogy"><span>打个比方</span><p>像练跑步时保留几种合理步幅，而不是过早认定只有一个动作最好。</p></div>
+                    <h4>它是怎么学的？</h4><ol class="learning-steps"><li>Actor 输出动作分布，而不是固定的一组动作。</li><li>双 Critic 学习包含熵项的长期价值目标。</li><li>经典 SAC 用价值与熵共同优化策略，温度系数控制多样性的权重。</li></ol>
+                    <details class="formula"><summary>再多懂一点：一句公式</summary><p class="formula-line">经典 SAC 的目标 ≈ 累计奖励 + 温度系数 × 策略熵</p><p>熵可以理解为动作选择的多样性。温度权重大时，更重视保留选择；它不是随便乱做动作。</p></details>
+                </div>
+                <aside class="lesson-aside">
+                    <div><h4>它擅长什么</h4><p>随机策略能表达多种动作选择，经典版本常用于连续控制。</p></div>
+                    <div><h4>需要留意</h4><p>固定离线训练不会因策略随机就获得新数据；数据外动作依然可能被错误评价。</p></div>
+                    <div class="project-note"><span class="tiny-label">本项目的实现 / NB</span><p>SAC.py 的 Actor 使用优势加权的数据动作对数似然，属于 AWAC 风格改写；SAC_NB.py 使用 SAC 目标加 BC 正则。这两份实现不只是同一损失上简单加减一项。</p></div>
+                    <div class="memory-line"><span>记住这句话</span><p>经典 SAC：收益与多样性兼顾。本项目：关注具体的离线 Actor 目标。</p></div>
+                    <a class="text-link detail-link" href="modelsinfo/sac.html">继续看 SAC 的代码与原理 ↗</a>
+                </aside>
+                <details class="self-check"><summary><span>想一想</span>离线 SAC 有随机策略，就能主动去环境里探索吗？</summary><p>不能。离线训练只使用已有数据；策略有随机性与训练时能否采集新数据是两件事。</p></details>
+            </article>
+
+            <article class="lesson" id="cql" data-lesson="cql" aria-labelledby="title-cql">
+                <div class="lesson-main">
+                    <div class="lesson-label"><span>离线强化学习</span><span>05 / 05</span></div>
+                    <h3 id="title-cql">CQL<span>对陌生动作谨慎打分</span></h3>
+                    <p class="one-line">给 Q 学习加入保守约束，减少对缺少数据支持的动作的过高估计。</p>
+                    <div class="analogy"><span>打个比方</span><p>像只看训练录像的教练：对录像里几乎没见过的高难度动作，不能凭想象给出很高分。</p></div>
+                    <h4>它是怎么学的？</h4><ol class="learning-steps"><li>用已有转移数据学习 Critic 的价值目标。</li><li>比较采样候选动作与数据动作的 Q 值，加入保守惩罚。</li><li>策略根据受到约束的评价学习，减少利用虚假高分的机会。</li></ol>
+                    <details class="formula"><summary>再多懂一点：一句公式</summary><p class="formula-line">Critic 损失 = 价值拟合误差 + 保守惩罚的加权项</p><p>保守项抑制缺少支持的高估，同时相对保留数据动作的价值；不是把所有 Q 值一律压低。</p></details>
+                </div>
+                <aside class="lesson-aside">
+                    <div><h4>它擅长什么</h4><p>直接针对离线学习中的分布外动作高估问题。</p></div>
+                    <div><h4>需要留意</h4><p>约束太强可能过于保守；保守项变小本身不能证明策略更好。</p></div>
+                    <div class="project-note"><span class="tiny-label">本项目的实现 / NB</span><p>CQL.py 与 CQL_NB.py 都有保守价值学习和 BC 相关约束。NB 版进一步调整保守项计算与 Q / BC 尺度平衡；它是项目实现的变体，不等同于复现论文的全部设定。</p></div>
+                    <div class="memory-line"><span>记住这句话</span><p>CQL：陌生动作别虚高。本项目 NB：继续调整约束与学习尺度。</p></div>
+                    <a class="text-link detail-link" href="modelsinfo/cql.html">继续看 CQL 的代码与原理 ↗</a>
+                </aside>
+                <details class="self-check"><summary><span>想一想</span>CQL 的保守惩罚越大，策略就一定越好吗？</summary><p>不一定。过强的保守约束可能压制有效改进，应结合稳定性与独立回报评估判断。</p></details>
+            </article>
+
+        </div>
+    </section>
+
+    <section class="comparison-section" id="comparison" aria-labelledby="comparison-title">
+        <div class="section-heading"><p class="eyebrow">放在一起看</p><h2 id="comparison-title">各自解决什么问题？</h2><p>下表概括经典思想；上方卡片单独说明本项目的离线改写。</p></div>
+        <div class="table-wrap"><table><caption class="visually-hidden">五种算法的学习思路对照</caption><thead><tr><th scope="col">算法</th><th scope="col">核心问题</th><th scope="col">记忆关键词</th><th scope="col">怎么理解</th></tr></thead><tbody>
+            <tr><th scope="row">BC</th><td>怎样模仿示范？</td><td>动作拟合</td><td>照着数据做</td></tr>
+            <tr><th scope="row">DDPG</th><td>连续动作怎样改进？</td><td>Actor + Critic</td><td>按评价调动作</td></tr>
+            <tr><th scope="row">TD3</th><td>评价高估、训练不稳怎么办？</td><td>双 Q · 延迟 · 平滑</td><td>让评价和更新更稳</td></tr>
+            <tr><th scope="row">SAC</th><td>怎样兼顾收益与动作多样性？</td><td>随机策略 · 熵</td><td>保留合理选择</td></tr>
+            <tr><th scope="row">CQL</th><td>离线数据外动作被高估怎么办？</td><td>保守价值学习</td><td>陌生动作谨慎打分</td></tr>
+        </tbody></table></div>
+        <div class="takeaway"><strong>NB 是本项目的版本名，不是通用算法名称。</strong><p>它没有统一的一招：BC_NB 使用回报加权，其他版本分别调整保守项、策略约束与训练尺度。是否改进，要看同等设置下的独立评估；训练损失和图表本身不能证明回报更高。</p></div>
+    </section>
+
+    <section class="next-step"><div><p class="eyebrow">把直觉接到真实实验</p><h2>理解思路之后，看看它们学得怎样。</h2><p>数据、训练曲线和对比分析，都保留在这里。</p></div><div class="next-actions"><a class="button" href="results/index.html">查看训练结果 ↗</a><a class="text-link" href="compare/index.html">对比 Base 与 NB →</a></div></section>
+    <footer class="site-footer"><p><strong>策学 · PolicyLab</strong>　从直觉走向算法。</p><p>延伸阅读：<a href="https://spinningup.openai.com/en/latest/algorithms/ddpg.html">DDPG</a> · <a href="https://spinningup.openai.com/en/latest/algorithms/td3.html">TD3</a> · <a href="https://spinningup.openai.com/en/latest/algorithms/sac.html">SAC</a>（OpenAI Spinning Up） · <a href="https://arxiv.org/abs/2006.04779">CQL 原论文</a>。项目实现以 AIcodes 中的源码为准。</p></footer>
+</main>
+</body>
+</html>

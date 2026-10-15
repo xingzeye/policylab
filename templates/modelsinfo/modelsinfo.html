@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>{{ page_title }}</title>
+    <link rel="icon" href="{% static 'policylab/favicon.svg' %}" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+    <style>
+        body { background: #f6f7fb; font-family: "Microsoft YaHei", Arial, sans-serif; color: #333; }
+        .page-wrap { padding: 24px 0 36px; }
+        .top-panel, .section-panel { border: 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+        .top-panel .panel-body { padding: 22px 24px; }
+        .summary-title { margin: 0 0 10px; font-size: 24px; font-weight: 700; }
+        .summary-text { color: #666; line-height: 1.85; margin-bottom: 0; }
+        .control-row { margin-top: 16px; }
+        .control-label { padding-top: 8px; font-weight: 700; }
+        .nav-tabs { border-bottom: 1px solid #ddd; }
+        .nav-tabs > li > a { color: #555; font-weight: 700; }
+        .nav-tabs > li.active > a,
+        .nav-tabs > li.active > a:hover,
+        .nav-tabs > li.active > a:focus { color: #337ab7; }
+        .tab-content { background: #fff; border: 1px solid #ddd; border-top: 0; padding: 22px; border-radius: 0 0 8px 8px; }
+        .section-title { margin: 0 0 14px; font-size: 22px; font-weight: 700; }
+        .section-lead { color: #666; line-height: 1.9; margin-bottom: 18px; }
+        .soft-card { background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
+        .soft-card h4 { margin-top: 0; margin-bottom: 10px; font-size: 16px; font-weight: 700; }
+        .soft-card p, .soft-card li { color: #666; line-height: 1.8; }
+        .design-layer { margin-bottom: 10px; }
+        .design-layer:last-child { margin-bottom: 0; }
+        .design-label { display: inline-block; margin-bottom: 4px; font-weight: 700; color: #337ab7; }
+        .design-label.tech { color: #555; }
+        .steps { counter-reset: item; list-style: none; padding-left: 0; }
+        .steps li { position: relative; padding: 12px 12px 12px 50px; margin-bottom: 12px; background: #fafbfd; border: 1px solid #e8edf4; border-radius: 8px; }
+        .steps li:before { counter-increment: item; content: counter(item); position: absolute; left: 15px; top: 10px; width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; background: #337ab7; color: #fff; font-weight: 700; }
+        .kv-table th { width: 220px; background: #fafafa; }
+        .mini-note { color: #888; margin-top: 8px; }
+        .compare-table th { white-space: nowrap; }
+        .bottom-text { color: #666; line-height: 1.9; }
+        .conclusion-points { margin: 0; padding-left: 20px; color: #666; line-height: 1.9; }
+        .conclusion-points li { margin-bottom: 8px; }
+        .conclusion-points li:last-child { margin-bottom: 0; }
+        .pair-hint { margin-top: 10px; color: #888; }
+        @media (max-width: 767px) {
+            .summary-title { font-size: 20px; }
+            .control-label { padding-top: 0; margin-bottom: 8px; }
+            .tab-content { padding: 16px; }
+            .kv-table th { width: 120px; }
+        }
+    </style>
+</head>
+<body>
+{% include 'includes/site_nav.html' %}
+<div class="container page-wrap">
+    <div class="panel top-panel">
+        <div class="panel-body">
+            <h2 class="summary-title">{{ current_pair.title }}</h2>
+            <p class="summary-text">{{ current_pair.summary }}</p>
+
+            <div class="row control-row">
+                <div class="col-sm-2 control-label">选择算法对</div>
+                <div class="col-sm-5">
+                    <select class="form-control" id="pair-select">
+                        {% for pair in pairs %}
+                            <option value="{{ pair.key }}" {% if pair.key == current_key %}selected{% endif %}>{{ pair.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="panel section-panel">
+        <div class="panel-body" style="padding-bottom:0;">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#tab-beginner" aria-controls="tab-beginner" role="tab" data-toggle="tab">{{ current_pair.sections.beginner.title }}</a></li>
+                <li role="presentation"><a href="#tab-flow" aria-controls="tab-flow" role="tab" data-toggle="tab">{{ current_pair.sections.flow.title }}</a></li>
+                <li role="presentation"><a href="#tab-design" aria-controls="tab-design" role="tab" data-toggle="tab">{{ current_pair.sections.design.title }}</a></li>
+                <li role="presentation"><a href="#tab-params" aria-controls="tab-params" role="tab" data-toggle="tab">{{ current_pair.sections.params.title }}</a></li>
+                <li role="presentation"><a href="#tab-code" aria-controls="tab-code" role="tab" data-toggle="tab">{{ current_pair.sections.code.title }}</a></li>
+                <li role="presentation"><a href="#tab-io" aria-controls="tab-io" role="tab" data-toggle="tab">{{ current_pair.sections.io.title }}</a></li>
+                <li role="presentation"><a href="#tab-compare" aria-controls="tab-compare" role="tab" data-toggle="tab">{{ current_pair.sections.compare.title }}</a></li>
+                <li role="presentation"><a href="#tab-conclusion" aria-controls="tab-conclusion" role="tab" data-toggle="tab">{{ current_pair.sections.conclusion.title }}</a></li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            {% with s=current_pair.sections.beginner %}
+            <div role="tabpanel" class="tab-pane fade in active" id="tab-beginner">
+                <h3 class="section-title">{{ s.title }}</h3>
+                <p class="section-lead">{{ s.lead }}</p>
+                <div class="row">
+                    {% for item in s.bullets %}
+                    <div class="col-md-4 col-sm-6">
+                        <div class="soft-card"><p style="margin:0;">{{ item }}</p></div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endwith %}
+
+            {% with s=current_pair.sections.flow %}
+            <div role="tabpanel" class="tab-pane fade" id="tab-flow">
+                <h3 class="section-title">{{ s.title }}</h3>
+                <ol class="steps">
+                    {% for step in s.steps %}
+                    <li>{{ step }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% endwith %}
+
+            {% with s=current_pair.sections.design %}
+            <div role="tabpanel" class="tab-pane fade" id="tab-design">
+                <h3 class="section-title">{{ s.title }}</h3>
+                <div class="row">
+                    {% for card in s.cards %}
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>{{ card.title }}</h4>
+                            {% if card.plain or card.technical %}
+                                {% if card.plain %}
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        {{ card.plain }}
+                                    </p>
+                                {% elif card.content %}
+                                    <p class="design-layer">
+                                        <span class="design-label">通俗理解：</span><br>
+                                        {{ card.content }}
+                                    </p>
+                                {% endif %}
+                                {% if card.technical %}
+                                    <p class="design-layer">
+                                        <span class="design-label tech">技术对应：</span><br>
+                                        {{ card.technical }}
+                                    </p>
+                                {% endif %}
+                            {% else %}
+                                <p style="margin:0;">{{ card.content }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endwith %}
+
+            {% with s=current_pair.sections.params %}
+            <div role="tabpanel" class="tab-pane fade" id="tab-params">
+                <h3 class="section-title">{{ s.title }}</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>常用参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+                                {% for name, desc in s.basic %}
+                                    <tr><th>{{ name }}</th><td>{{ desc }}</td></tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>进阶参数</h4>
+                            <table class="table table-bordered kv-table" style="margin-bottom:0;">
+                                <tbody>
+                                {% for name, desc in s.advanced %}
+                                    <tr><th>{{ name }}</th><td>{{ desc }}</td></tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <p class="mini-note">建议先理解常用参数，再看进阶参数。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+
+            {% with s=current_pair.sections.code %}
+            <div role="tabpanel" class="tab-pane fade" id="tab-code">
+                <h3 class="section-title">{{ s.title }}</h3>
+                {% for name, desc in s.items %}
+                <div class="soft-card">
+                    <h4>{{ name }}</h4>
+                    <p style="margin-bottom:0;">{{ desc }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endwith %}
+
+            {% with s=current_pair.sections.io %}
+            <div role="tabpanel" class="tab-pane fade" id="tab-io">
+                <h3 class="section-title">{{ s.title }}</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输入</h4>
+                            <ul>{% for item in s.inputs %}<li>{{ item }}</li>{% endfor %}</ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="soft-card">
+                            <h4>输出与产物</h4>
+                            <ul>{% for item in s.outputs %}<li>{{ item }}</li>{% endfor %}</ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+
+            {% with s=current_pair.sections.compare %}
+            <div role="tabpanel" class="tab-pane fade" id="tab-compare">
+                <h3 class="section-title">{{ s.title }}</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover compare-table">
+                        <thead>
+                        <tr><th>对比项</th><th>{{ current_pair.base_name }}</th><th>{{ current_pair.nb_name }}</th></tr>
+                        </thead>
+                        <tbody>
+                        {% for row in s.rows %}
+                            <tr><th>{{ row.0 }}</th><td>{{ row.1 }}</td><td>{{ row.2 }}</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endwith %}
+
+            {% with s=current_pair.sections.conclusion %}
+            <div role="tabpanel" class="tab-pane fade" id="tab-conclusion">
+                <h3 class="section-title">{{ s.title }}</h3>
+                <div class="soft-card">
+                    {% if s.points %}
+                        <ul class="conclusion-points">
+                            {% for point in s.points %}
+                                <li>{{ point }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="bottom-text" style="margin:0;">{{ s.text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endwith %}
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    $('#pair-select').on('change', function () {
+        window.location.href = '?pair=' + $(this).val();
+    });
+})();
+</script>
+</body>
+</html>
