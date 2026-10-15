@@ -41,6 +41,8 @@
 
 在项目根目录执行 `conda run -n benke python manage.py export_pages --output dist`，再按 Sites 技能的 source helper 流程同步源码、打包和部署。`dist/` 被忽略，`docs/` 继续供 GitHub Pages 发布；不要把 Sites 凭据放入命令参数、文件或日志。部署须等待终态 `succeeded` 才能宣称成功。Sites 登录拦截是访问控制，不等于构建失败。
 
+本机官方 packager 需使用 Git for Windows 的 Bash，不能使用默认 WSL Bash。调用 source helper 前将 Git 安装目录的 `bin` 放到进程 PATH 首位，并设置进程环境变量 `TAR_OPTIONS=--force-local`；否则 GNU tar 会把 `D:` 盘符当作远端归档地址。该兼容设置不涉及站点运行时环境变量。
+
 ## 本地与 GitHub Pages 验证建议
 
 修改算法介绍页后，至少运行：
