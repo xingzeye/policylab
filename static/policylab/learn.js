@@ -16,5 +16,9 @@
     links.forEach(function (link) {
         link.addEventListener('click', function () { show(link.dataset.algorithm); });
     });
-    window.addEventListener('hashchange', function () { show(location.hash.slice(1)); });
+    window.addEventListener('hashchange', function () {
+        var key = location.hash.slice(1);
+        if (!key) show('bc');
+        else show(key);
+    });
 }());
